@@ -1952,9 +1952,9 @@ class ClaimController extends Controller
 
         $claim  = Claim::itemClaimReject()->findOrFail($id);
         $CsrFile = $claim->CsrFile->where('rpid_oid',$request->rpid_oid)->first();
-        $url_csr = storage_path("../../dlvnprod" . $CsrFile->path . $CsrFile->filename);
+        $url_csr = storage_path("../../vprod" . $CsrFile->path . $CsrFile->filename);
         $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
-        $pagecount = $mpdf->SetSourceFile(storage_path("../../dlvnprod" . $CsrFile->path . $CsrFile->filename));
+        $pagecount = $mpdf->SetSourceFile(storage_path("../../vprod" . $CsrFile->path . $CsrFile->filename));
         $file_name_cat =  md5(Str::random(14).time());
         $path_file_name_cat = storage_path("app/public/cache/$file_name_cat");
         $cm_run = "gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dFirstPage=1 -dLastPage={$pagecount} -sOutputFile={$path_file_name_cat} {$url_csr}" ;

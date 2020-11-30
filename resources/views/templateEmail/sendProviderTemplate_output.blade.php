@@ -62,7 +62,6 @@
                         </tr>
                         </tbody>
                         </table>
-                        <p class="MsoNormal"><span style="font-size: 12.0pt; font-family: 'Times New Roman',serif; color: red;">Vui lòng lưu ý: Mọi hình thức viết: Dai-Ichi hoặc Daiichi là chưa chính xác:</span></p>
                         <p class="MsoNormal"><span style="font-size: 12.0pt; font-family: 'Californian FB',serif; color: #1f3864;">&nbsp;</span></p>
                         <p>Xin đừng trả lời trực tiếp email này. Nếu bạn có bất kỳ câu hỏi hoặc nhận xét nào về email này, vui lòng liên hệ với chúng tôi theo địa chỉ: <span style="color:blue">{{$data['email_reply']}}</span><p>
                         <p class="MsoNormal"><span style="font-family: 'Californian FB',serif; color: black; mso-fareast-language: EN-GB;">Thanks &amp; Best Regards,</span></p>
