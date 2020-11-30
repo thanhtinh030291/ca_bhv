@@ -109,9 +109,9 @@ return[
     // 'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     // 'url_hbs' => 'http://192.168.148.3:8010/',
     //test
-    'token_mantic' => 'DTyr8knwv89m39_8YYU2S_Zh6u9klbSt',
-    'url_mantic' => 'http://local/pacific_project/mantis_bhv/',
-    'url_mantic_api' => 'http://local/pacific_project/mantis_bhv/',
+    'token_mantic' => 'z-x1DmlA3dZwU8hnGgC1LOahQ_1fgzcV',
+    'url_mantic' => 'https://uat-etalk.pacificcross.com.vn/',
+    'url_mantic_api' => 'https://uat-etalk.pacificcross.com.vn/',
     'url_cps' => 'https://cpspcv-uat.pacificcross.com.vn/index.php/',
     'api_cps' => 'https://cpspcv-uat.pacificcross.com.vn/index.php/api/',
     'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
