@@ -703,21 +703,21 @@ class ClaimController extends Controller
                 $export_letter->approve = null;
             }
             if($status_change[1] == 'approved'){ //nofice
-                if($user->hasRole('Claim')){
-                    $leader = $user->Leader;
-                    if($leader != null){
-                        $to_user = [$leader];
-                    }
-                }
-                if($request->status_change != 26 && ($user->hasRole('Lead') || $user->hasRole('Claim Independent'))){
-                    $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
-                    $to_user = [Arr::random($to_user)];
-                }
-                if(($user_create->hasRole('Claim') || $user_create->hasRole('Lead')) && $user->hasRole('QC') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 30000000){
+                // if($user->hasRole('Claim')){
+                //     $leader = $user->Leader;
+                //     if($leader != null){
+                //         $to_user = [$leader];
+                //     }
+                // }
+                // if($request->status_change != 26 && ($user->hasRole('Lead') || $user->hasRole('Claim Independent'))){
+                //     $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
+                //     $to_user = [Arr::random($to_user)];
+                // }
+                if(  $user->hasRole('Claim Independent') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 20000000){
                     $to_user = [$user_create->supper];
                 }
                 
-                if( $request->status_change != 4  && $user->hasRole('Supper') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000){
+                if( $user->hasRole('Supper') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000){
                     $to_user = [$user_create->manager];
                 }
 
