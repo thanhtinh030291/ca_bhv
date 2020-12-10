@@ -99,7 +99,7 @@ class ClaimWordSheetController extends Controller
         
         $claim  = Claim::itemClaimReject()->findOrFail($claimWordSheet->claim_id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
-        $member = HBS_MR_MEMBER::where('MEMB_REF_NO',$claimWordSheet->mem_ref_no)->first();
+        $member = HBS_MR_MEMBER::where('MBR_NO',$claimWordSheet->mem_ref_no)->first();
         $condition_field = function($q) use ($claimWordSheet){
             $q->where('field_id', '4');
             $q->where('value',$claimWordSheet->mem_ref_no);
@@ -125,6 +125,7 @@ class ClaimWordSheetController extends Controller
         });
         $count_bnf = $bnf->max() == null ? 0 : $bnf->max();
         //dd($member->MR_MEMBER_EVENT->where('scma_oid_event_code', 'EVENT_CODE_EXPL')->first());
+        
         return view('claim_word_sheets.show', compact('claimWordSheet', 'claim', 'HBS_CL_CLAIM', 'member','claim_line', 'log_history', 'listReasonReject','count_bnf', 'MANTIS_BUG'));
     }
 
@@ -132,7 +133,7 @@ class ClaimWordSheetController extends Controller
 
         $claim  = Claim::itemClaimReject()->findOrFail($claimWordSheet->claim_id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
-        $member = HBS_MR_MEMBER::where('MEMB_REF_NO',$claimWordSheet->mem_ref_no)->first();
+        $member = HBS_MR_MEMBER::where('MBR_NO',$claimWordSheet->mem_ref_no)->first();
         $claim_line = $member->ClaimLine;
         //rmove claim line curent
         $arr_clli_oid = $HBS_CL_CLAIM->HBS_CL_LINE->pluck('clli_oid')->toArray();

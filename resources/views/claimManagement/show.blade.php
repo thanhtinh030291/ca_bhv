@@ -67,7 +67,7 @@ $totalAmount = 0;
                                         
                                         {{ Form::open(array('url' => route('claimWordSheets.store'))) }}
                                         {{ Form::hidden('claim_id', $data->id ) }}
-                                        {{ Form::hidden('mem_ref_no', $data->clClaim->member->memb_ref_no ) }}
+                                        {{ Form::hidden('mem_ref_no', $data->clClaim->member->mbr_no ) }}
                                         <button class="btn btn-info" type="submit" value="save">Run</button> 
                                         {{ Form::close() }}
                                     @endif

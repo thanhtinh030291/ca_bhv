@@ -52,6 +52,20 @@ class HBS_CL_CLAIM extends  BaseModelDB2
         return null;
     }
 
+    public function getBrokerAttribute()
+    {
+        return $this->police->HBS_CM_BROKER;
+        
+    }
+
+    public function getFrontlinerAttribute()
+    {
+        return $this->police->HBS_CM_BROKER_FRONTLINER;
+        
+    }
+
+    
+
     public function getFirstLineAttribute(){
         return $this->HBS_CL_LINE->first();
     }

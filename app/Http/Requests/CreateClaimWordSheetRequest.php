@@ -34,7 +34,7 @@ class CreateClaimWordSheetRequest extends FormRequest
     public function messages() 
     {
         return [
-            'mem_ref_no.required' => 'Claim Chưa có mem_ref_no vui lòng kiểm Tra lại HBS',
+            'mem_ref_no.required' => 'Claim Chưa có memb_no vui lòng kiểm Tra lại HBS',
             'claim_id.unique' => 'Work Sheet của Claim này đã tồn tại'
         ];
     }

@@ -219,10 +219,7 @@ $('.remove_field').click(function(e){ //user click on remove text
     e.preventDefault(); $(this).parent('div').remove(); 
 })
 $(document).ready(function() {
-    // load online query
-        var myData = @json(json_decode(trim($member->queryOnline),true));
-        var editor = new JsonEditor('#jsonViewer', myData);
-    //end load online query
+
 
     //type of visit
         var count_type = 1;

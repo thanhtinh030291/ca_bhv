@@ -89,7 +89,7 @@
         <thead>
             <tr>
                 <th>
-                    DLVN Claim
+                    BHV Claim
                 </th>
             </tr>    
         </thead>
@@ -106,40 +106,31 @@
 <table class="table" style="margin-top: 20px;">
     <tr>
         <td>
-            <p class="font-weight-bold">Name: {{$member->mbr_last_name ." " . $member->mbr_first_name}}</p>
+            <p class="font-weight-bold">Insured Person: {{$member->mbr_last_name ." " . $member->mbr_first_name}}</p>
         </td>
         <td align="center">
             <p class="font-weight-bold" >DOB: {{ Carbon\Carbon::parse($member->dob)->format('d/m/Y') }}</p>
         </td>
         <td>
-            <p class="font-weight-bold">Sex: {{str_replace("SEX_", "",$member->scma_oid_sex)}}</p>
+            <p class="font-weight-bold">Sex: {{str_replace("SEX_", "",$member->scma_oid_sex)}} / <span>Member No.: {{$member->mbr_no}}</span></p>
         </td>
     </tr>
 
     <tr>
         <td>
-            <p class="font-weight-bold">Policy No: {{$HBS_CL_CLAIM->Police->pocy_ref_no}}</p>
+            <p class="font-weight-bold">Policy Holder: {{$HBS_CL_CLAIM->policyHolder->poho_name_1}}</p>
         </td>
         <td>
-            <p class="font-weight-bold">Member No: {{ $member->memb_ref_no}}</p>
+            <p class="font-weight-bold">Policy Effective Date: {{ $member->pocyEffdate}}</p>
         </td>
         <td>
-            <p class="font-weight-bold">Claim No.: {{$claim->code_claim_show}}</p>
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <p class="font-weight-bold">Effective date: {{$member->pocyEffdate}}</p>
-        </td>
-        <td></td>
-        <td>
-            <p class="font-weight-bold">Status:  {!!$claimWordSheet->status_online_query ? $claimWordSheet->status_online_query : $member->statusQuery!!}</p>
+            <p class="font-weight-bold">Member Effective Date: {{ Carbon\Carbon::parse($member->eff_date)->format('d/m/Y')}}</p>
         </td>
     </tr>
 
+
     <tr>
-        <td>
+        <td colspan="2">
             <p class="font-weight-bold">Plan: </p>
             <div style="margin-left: 25px;">
                 @foreach ($member->plan as $item)
@@ -147,24 +138,9 @@
                 @endforeach
             </div>
         </td>
-        <td></td>
-        <td >
-            <div class="form-check form-check-inline">
-                {{ Form::hidden('30_day', '0')}}
-                {{ Form::checkbox('30_day', '1', $claimWordSheet['30_day'] == 1? true : false , ['class' => 'form-check-input'])}}
-                <label class="form-check-label" for="inlineCheckbox1">- 30 ngày chờ</label>
-            </div><br>
-            <div class="form-check form-check-inline">
-                {{ Form::hidden('1_year', '0')}}
-                {{ Form::checkbox('1_year', '1', $claimWordSheet['1_year'] == 1? true : false , ['class' => 'form-check-input'])}}
-                <label class="form-check-label" for="inlineCheckbox1">- 1 năm chờ</label>
-            </div><br>
-            <div class="form-check form-check-inline">
-                {{ Form::hidden('contract_rule', '0')}}
-                {{ Form::checkbox('contract_rule', '1', $claimWordSheet['contract_rule'] == 1? true : false , ['class' => 'form-check-input'])}}
-                <label class="form-check-label" for="inlineCheckbox1">- Hợp đồng/Điều khoản</label>
-            </div>
-        </tr>
+        <td>
+            <p class="font-weight-bold">Broker/Frontliner: {{data_get($HBS_CL_CLAIM->broker,'brkr_name_1')}} / {{data_get($HBS_CL_CLAIM->Frontliner,'brkr_name_1', "None")}}</p>
+        </td>
     </tr>
 </table>
 <div style="margin-left: 10px;">
@@ -209,31 +185,6 @@
     </tbody>
 </table>
 
-<div style="margin-left: 10px;">
-    <p class="font-weight-bold">CLAIM HISTORY</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Diagnosis</th>
-                <th>Treatment</th>
-                <th>Claim result(Approved)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(!empty($claim_line))
-            @foreach ($claim_line as $item)
-                <tr>
-                    <td><p>{{Carbon\Carbon::parse($item->incur_date_from)->format('d/m/Y') .' - '.Carbon\Carbon::parse($item->incur_date_to)->format('d/m/Y')}}</p></td>
-                    <td><p>{{$item->RT_DIAGNOSIS->diag_desc_vn}}</p></td>
-                    <td><p>{{str_replace("BENEFIT_TYPE_", "", $item->PD_BEN_HEAD->scma_oid_ben_type)}} - {{$item->PD_BEN_HEAD->ben_head}}</p></td>
-                    <td><p>{{formatPrice($item->app_amt)}}</p></td>
-                </tr>
-            @endforeach
-            @endif
-        </tbody>
-    </table>
-</div>
 
 <div style="margin-left: 10px;">
     <p class="font-weight-bold">MEMBER CLAIM EVENT</p>

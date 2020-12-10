@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th>
-                    DLVN Claim
+                    BHV Claim
                 </th>
             </tr>
         </thead>
@@ -19,41 +19,32 @@
 </div>
 <div class="row mt-5">
     <div class="col-md-4">
-    <p class="font-weight-bold">Name: {{$member->mbr_last_name ." " . $member->mbr_first_name}}</p>
+    <p class="font-weight-bold">Insured Person: {{$member->mbr_last_name ." " . $member->mbr_first_name}}</p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
     <p class="font-weight-bold">DOB: {{ Carbon\Carbon::parse($member->dob)->format('d/m/Y') }}</p>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
     <p class="font-weight-bold">Sex: {{str_replace("SEX_", "",$member->scma_oid_sex)}}</p>
     </div>
+    <div class="col-md-3">
+        <p class="font-weight-bold">Member No.: {{$member->mbr_no}}</p>
+        </div>
 </div>
 
 <div class="row">
     <div class="col-md-4">
-    <p class="font-weight-bold">Policy No: {{$HBS_CL_CLAIM->Police->pocy_ref_no}}</p>
+    <p class="font-weight-bold">Policy Holder: {{$HBS_CL_CLAIM->policyHolder->poho_name_1}}</p>
     </div>
     <div class="col-md-4">
-    <p class="font-weight-bold">Member No: {{ $member->memb_ref_no}}</p>
+    <p class="font-weight-bold">Policy Effective Date: {{ $member->pocyEffdate}}</p>
     </div>
     <div class="col-md-4">
-    <p class="font-weight-bold">Claim No.: {{$claim->code_claim_show}}</p>
+    <p class="font-weight-bold">Member Effective Date: {{ Carbon\Carbon::parse($member->eff_date)->format('d/m/Y')}}</p>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-    <p class="font-weight-bold">Effective date: {{$member->pocyEffdate}}</p>
-    </div>
-    <div class="col-md-6">
-    <p class="font-weight-bold">Status:  
-        {!! Form::textarea('status_online_query', $claimWordSheet->status_online_query ? $claimWordSheet->status_online_query : $member->statusQuery,['class' => 'editor_not_menu' , 'rows' => "3"]) !!}
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#onlineQueryModal">
-            Online Query
-        </button>
-    </p>
-    </div>
-</div>
+
 <div class="row">
     <div class="col-md-6">
         <p class="font-weight-bold">Plan: </p>
@@ -64,24 +55,10 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="form-check form-check-inline">
-            {{ Form::hidden('30_day', '0')}}
-            {{ Form::checkbox('30_day', '1', $claimWordSheet['30_day'] == 1? true : false , ['class' => 'form-check-input'])}}
-            <label class="form-check-label" for="inlineCheckbox1">- 30 ngày chờ</label>
-        </div><br>
-        <div class="form-check form-check-inline">
-            {{ Form::hidden('1_year', '0')}}
-            {{ Form::checkbox('1_year', '1', $claimWordSheet['1_year'] == 1? true : false , ['class' => 'form-check-input'])}}
-            <label class="form-check-label" for="inlineCheckbox1">- 1 năm chờ</label>
-        </div><br>
-        <div class="form-check form-check-inline">
-            {{ Form::hidden('contract_rule', '0')}}
-            {{ Form::checkbox('contract_rule', '1', $claimWordSheet['contract_rule'] == 1? true : false , ['class' => 'form-check-input'])}}
-            <label class="form-check-label" for="inlineCheckbox1">- Hợp đồng/Điều khoản</label>
-        </div>
-        
+    <p class="font-weight-bold">Broker/Frontliner: {{data_get($HBS_CL_CLAIM->broker,'brkr_name_1')}} / {{data_get($HBS_CL_CLAIM->Frontliner,'brkr_name_1', "None")}}</p>
     </div>
 </div>
+
 <div>
     <p class="font-weight-bold">Occupation Loading: 
         @foreach ($member->occupation as $item)
@@ -165,32 +142,8 @@
         </tbody>
     </table>
 </div>
-<div>
-    <p class="font-weight-bold">CALL LOG HISTORY (Last 7 Days)</p>
-    <table class="table table-striped header-fixed w-75">
-        <thead>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Phone</th>
-            <th>Description</th>
-        </thead>
-        <tbody>
-            @if(!empty($MANTIS_BUG))
-            @foreach ($MANTIS_BUG as $item)
-                <tr>
-                    <td><a class="btn btn-primary" target="_blank" href="{{config('constants.url_mantic').'view.php?id='.$item->id }}">{{$item->id}}</a></td>
-                    <td width="150">{{ date("d-m-Y", data_get($item,'CUSTOM_FIELD_STRING.0.value')) }}</td>
-                    <td width="100">{{ data_get($item,'CUSTOM_FIELD_STRING.1.value') }}</td>
-                    <td width="150">{{ data_get($item,'CUSTOM_FIELD_STRING.2.value') }}</td>
-                    <td>{{ data_get($item,'BUG_TEXT.description') }}</td>
-                </tr>
-            @endforeach
-            @endif
-                
-        </tbody>
-    </table>
-</div>
+
+
 
 <div>
     <p class="font-weight-bold">MEMBER CLAIM EVENT</p>
@@ -404,6 +357,7 @@
         </div>
     </div>
 </div><br>
+
 <div>
     <p class="font-weight-bold">Status : {{ data_get(config("constants.statusWorksheet"), $claimWordSheet->status)}}</p>
     <p class="text-danger">Vui lòng lưu lại trước khi tải work sheet về máy hoặc lưu worksheet vào tệp đã sắp sếp  !!!!</p>
@@ -419,25 +373,6 @@
     </div>
 </div><br>
 
-<div class="modal fade bd-example-modal-lg" id="onlineQueryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Online Query</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        </div>
-        <div class="modal-body" id="rerulf_online_query" style="max-height: 350px; overflow: scroll;">
-            {{-- <pre>
-                {!!print("<pre>". print_r(json_decode(trim($member->queryOnline),true)) . "</pre>")!!}
-            </pre> --}}
-            <div id="jsonViewer"></div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-    </div>
-    </div>
-</div>
+
+
 
