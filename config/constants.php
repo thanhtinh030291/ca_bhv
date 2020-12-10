@@ -120,7 +120,7 @@ return[
     //end test
     'grant_type' => 'client_credentials',
     'url_query_online' => 'https://pcvwebservice.pacificcross.com.vn/bluecross/query_rest.php?id=',
-    'mount_dlvn' => "http://192.168.0.235/vprod/",
+    'mount_dlvn' => "http://192.168.0.237/vprod/",
     'claim_result' => [
         1 => 'FULLY PAID' ,
         2 => 'PARTIALLY PAID',
