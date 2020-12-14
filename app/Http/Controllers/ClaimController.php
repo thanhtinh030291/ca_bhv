@@ -1918,7 +1918,7 @@ class ClaimController extends Controller
         $CsrFile = $claim->CsrFile->where('rpct_oid','CLSETTRPT01_CC')->first();
         $url_csr = storage_path("../../vprod" . $CsrFile->path . $CsrFile->filename);
         $count_page = $mpdf->SetSourceFile($url_csr);
-        for ($i = 1; $i <= $count_page-1; $i++) {
+        for ($i = 1; $i <= $count_page; $i++) {
             $mpdf->AddPage('L');
             $tplId = $mpdf->ImportPage($i);
             $mpdf->UseTemplate($tplId);
