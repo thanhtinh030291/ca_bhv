@@ -332,9 +332,6 @@ class ClaimController extends Controller
             $user_create = User::findOrFail($value->created_user);
             if($claim->jetcase == 1){
                 $export_letter[$key]['end_status'] = 10;
-            }
-            elseif( $user_create->hasRole('Claim Independent') && removeFormatPrice(data_get($value->info, 'approve_amt')) <= 50000000){
-                $export_letter[$key]['end_status'] = 26;
             }else{
                 $export_letter[$key]['end_status'] = $level->end_status;
             }
@@ -1894,7 +1891,6 @@ class ClaimController extends Controller
         $export_letter = ExportLetter::findOrFail($export_letter_id);
         $user = Auth::User();
         $claim  = Claim::itemClaimReject()->findOrFail($id);
-
         //get file 
         if($export_letter->approve != null){
             $data['content_letter'] = $export_letter->approve['data'];
@@ -1919,7 +1915,7 @@ class ClaimController extends Controller
         }
 
         //save CSR
-        $CsrFile = $claim->CsrFile->where('rpct_oid','VN_CLSETTRPT01_OC')->first();
+        $CsrFile = $claim->CsrFile->where('rpct_oid','CLSETTRPT01_CC')->first();
         $url_csr = storage_path("../../vnaiaprod" . $CsrFile->path . $CsrFile->filename);
         $count_page = $mpdf->SetSourceFile($url_csr);
         for ($i = 1; $i <= $count_page-1; $i++) {
@@ -1929,22 +1925,22 @@ class ClaimController extends Controller
         }
 
         //save cache letter
-        $file_name_letter =  md5(Str::random(11).time());
-        $mpdf_lt = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
-        $mpdf_lt->WriteHTML( $data['content_letter']);
-        $pdf = $mpdf_lt->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN);
-        Storage::put('public/cache/' . $file_name_letter, $pdf);
-        $path_file[] = storage_path("app/public/cache/$file_name_letter") ;
+        // $file_name_letter =  md5(Str::random(11).time());
+        // $mpdf_lt = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+        // $mpdf_lt->WriteHTML( $data['content_letter']);
+        // $pdf = $mpdf_lt->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN);
+        // Storage::put('public/cache/' . $file_name_letter, $pdf);
+        // $path_file[] = storage_path("app/public/cache/$file_name_letter") ;
 
-        $count_page = $mpdf->SetSourceFile(storage_path("app/public/cache/$file_name_letter"));
-        for ($i = 1; $i <= $count_page; $i++) {
-            $mpdf->AddPage();
-            $tplId = $mpdf->ImportPage($i);
-            $mpdf->UseTemplate($tplId);
-        }
+        // $count_page = $mpdf->SetSourceFile(storage_path("app/public/cache/$file_name_letter"));
+        // for ($i = 1; $i <= $count_page; $i++) {
+        //     $mpdf->AddPage();
+        //     $tplId = $mpdf->ImportPage($i);
+        //     $mpdf->UseTemplate($tplId);
+        // }
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
         //$namefile = Str::slug("{$HBS_CL_CLAIM->Police->pocy_ref_no}_{$HBS_CL_CLAIM->memberNameCap}_CSR_{$claim->code_claim_show}", '-').".pdf";
-        $namefile = $HBS_CL_CLAIM->Police->pocy_ref_no."-".strtoupper(Str::slug($HBS_CL_CLAIM->memberNameCap," "))."-CSR-".$claim->code_claim_show.".pdf";
+        $namefile = $HBS_CL_CLAIM->Police->pocy_no."-".strtoupper(Str::slug($HBS_CL_CLAIM->memberNameCap," "))."-CSR-".$claim->code_claim_show.".pdf";
         $mpdf->Output($namefile,'D');
     }
 
