@@ -84,6 +84,13 @@ $max = config('constants.minMaxLength.max');
                                                             {{ Form::text('finance_email', $setting->finance_email, [ 'class' => 'form-control','placeholder' =>'Email',  'data-role' => 'tagsinput']) }}<br/>
                                                         </div>
                                                     </div>  
+
+                                                    <div class="col-lg-6">
+                                                        <div class="form-group">
+                                                            {{ Form::label('memb_five_5m','Member of group 5M ', array('class' => 'labelas')) }} <span class="text-danger">*</span>
+                                                            {{ Form::select('memb_five_5m[]', $admin_list, $setting->memb_five_5m, [ 'class' => 'form-control select2','placeholder' =>'Email', 'required','multiple' => 'multiple']) }}<br/>
+                                                        </div>
+                                                    </div>  
                                                 </div>
                                                 
                                                 <div class="row">
@@ -149,6 +156,10 @@ $max = config('constants.minMaxLength.max');
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">
                         <!-- end col -->	  
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">						
@@ -174,8 +185,12 @@ $max = config('constants.minMaxLength.max');
                                     </div>
                                 </div>
                             </div>
-                    <!-- end col -->
-                    <!-- end col -->	  
+                        <!-- end col -->
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">
+                        <!-- end col -->	  
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">						
                                 <div class="card mb-3">
@@ -200,7 +215,11 @@ $max = config('constants.minMaxLength.max');
                                 </div>
                             </div>
                         </div>
-                    <!-- end col -->	     
+                        <!-- end col -->
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">	     
                     <!-- begin col -->	  
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">						
@@ -212,6 +231,37 @@ $max = config('constants.minMaxLength.max');
                                     <div class="card-body">
                                         
                                     {{ Form::open(array('url' => "admin/setting/updateFreezed", 'method' => 'post' ,'files' => true, 'id' => 'drawing-form')) }}
+                        
+                                        <div class="row">
+                                            <div class="col-lg-9 col-xl-9">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>							
+                                    </form>										
+                                </div>
+                            </div>
+                        </div>
+                    <!-- end col -->	                                  
+                    </div>
+                    <!-- end row -->	
+                </div>
+                <div class="content">
+                    <div class="container-fluid">	     
+                    <!-- begin col -->	  
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">						
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h3><i class="fa fa-user"></i> Check Update Benhead </h3>								
+                                    </div>
+                                        
+                                    <div class="card-body">
+                                        
+                                    {{ Form::open(array('url' => "admin/setting/updateBenhead", 'method' => 'post' ,'files' => true, 'id' => 'drawing-form')) }}
                         
                                         <div class="row">
                                             <div class="col-lg-9 col-xl-9">

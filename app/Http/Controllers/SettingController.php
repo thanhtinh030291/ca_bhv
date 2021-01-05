@@ -9,8 +9,10 @@ use App\HBS_CL_CLAIM;
 use App\Provider;
 use App\HBS_PV_PROVIDER;
 use App\LogHbsApproved;
+use App\HBS_PD_BEN_HEAD;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use App\HbsBenhead;
 use DB;
 
 
@@ -99,10 +101,20 @@ class SettingController extends Controller
         return redirect('/admin/setting');
     }
 
-    
-    public function updateFreezed(Request $request){
-        $HBS_CL_CLAIM = HBS_CL_CLAIM::where("CL_NO","<",2000000000)->update(['IS_FREEZED'=>1]);
-        
+    public function updateBenhead(Request $request){
+        $HBS_PD_BEN_HEAD = HBS_PD_BEN_HEAD::whereNotNull('BEN_HEAD')->with('PD_BEN_HEAD_LANG')->get();
+        foreach ($HBS_PD_BEN_HEAD as $key => $value) {
+            $HbsBenhead = HbsBenhead::updateOrCreate([
+                'code'   => $value->ben_head,
+            ],[
+                'desc_vn'     => $value->PD_BEN_HEAD_LANG->code_desc_vn,
+                'desc_en'     => $value->PD_BEN_HEAD_LANG->code_desc,
+                'ben_type'    => str_replace('BENEFIT_TYPE_',"",$value->scma_oid_ben_type),
+                'name'     => numberToRomanRepresentation($value->ben_head)
+            ]);
+        }
+        $request->session()->flash('status', "setting update success"); 
+        return redirect('/admin/setting');
     }
-    
+
 }

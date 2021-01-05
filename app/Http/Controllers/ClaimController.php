@@ -1455,6 +1455,8 @@ class ClaimController extends Controller
     function tableInfoPayment($HBS_CL_CLAIM){
         $sum_pre_amt = 0;
         $sum_app_amt = 0;
+        $HbsBenhead = \App\HbsBenhead::pluck('desc_vn','code');
+        
         $html = '
         <style type="text/css">
             table { page-break-inside:auto ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
@@ -1501,42 +1503,11 @@ class ClaimController extends Controller
                     <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                 </tr>';
             foreach ($valueIP as $key => $value) {
-                $content =config('constants.content_ip.'.$value->PD_BEN_HEAD->ben_head);
                 $range_pay = "";
-                $limit = $this->getlimitIP($value);
-                switch ($value->PD_BEN_HEAD->ben_head) {
-                    case 'ANES':
-                    case 'OPR':
-                    case 'SUR':
-                        $range_pay = " Tối đa ".formatPrice(data_get($limit,'amt'))." cho mỗi Bệnh tật/Thương tật, mỗi cuộc phẫu thuật";
-                        break;
-                    case 'HSP':
-                    case 'HVIS':
-                    case 'IMIS':
-                    case 'PORX':
-                    case 'POSH':
-                    case 'LAMB':
-                        $range_pay = " Tối đa ".formatPrice(data_get($limit,'amt'))." cho mỗi Bệnh tật/Thương tật, mỗi năm";
-                        break;
-                    case 'RB':
-                    case 'EXTB':
-                    case 'ICU':
-                    case 'CCU':    
-                    case 'HNUR':
-                    case 'PNUR':
-                        $range_pay = " Tối đa ".formatPrice(data_get($limit,'amt'))." mỗi ngày";
-                        break;
-                    case 'ER':
-                    case 'TDAM':
-                        $range_pay = " Tối đa ".formatPrice(data_get($limit,'amt'))."  cho mỗi Tai nạn, mỗi năm";
-                        break;
-                    default:
-                        $range_pay = " Tối đa ".formatPrice(data_get($limit,'amt'));
-                        break;
-                }
+                
                 $html .=    '
                             <tr>
-                                <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$content.'</td>
+                                <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
                                 <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; text-align: center; vertical-align: middle;">'.formatPrice($value->pres_amt).'</td>
                                 <td style="border: 1px solid black ; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
                             </tr>
@@ -1547,25 +1518,7 @@ class ClaimController extends Controller
         }
         // ngoại trú
         foreach ($OP as $key => $value) {
-            $content =config('constants.content_op.'.$value->PD_BEN_HEAD->ben_head);
-            $limit = $this->getlimitOP($value);
             
-            $content_limit = "";
-            switch ($value->PD_BEN_HEAD->ben_head) {
-                case 'OVRX':
-                case 'OV':
-                case 'RX':
-                case 'LAB':
-                case 'XRAY':
-                case 'PHYS':
-                case 'CHIR':    
-                    $content_limit = "Từ trên ".formatPrice(data_get($limit,'amt_from'))." đến tối đa ". formatPrice(data_get($limit,'amt_to')) ." mỗi lần thăm khám";
-                    break;
-                
-                default:
-                    $content_limit = "Tối đa ".formatPrice(data_get($limit,'amt_from'))." mỗi năm";
-                    break;
-            }
             if($key == 0){
                 
                 $html .= '<tr>
@@ -1575,7 +1528,7 @@ class ClaimController extends Controller
                         </tr>';
             }
             $html .=    '<tr>
-                            <td style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$content.'</td>
+                            <td style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
                             <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->pres_amt).'</td>
                             <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
                         </tr>';
@@ -1585,7 +1538,6 @@ class ClaimController extends Controller
 
         // rang
         foreach ($DT as $key => $value) {
-            $limit = $this->getlimitDT($value);
             if($key == 0){
                 
                 $html .= '<tr>
@@ -1595,7 +1547,7 @@ class ClaimController extends Controller
                         </tr>';
             }
             $html .=    '<tr>
-                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Chi phí điều trị nha khoa '.$value->RT_DIAGNOSIS->diag_desc_vn.'</td>
+                            <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.data_get($HbsBenhead,$value->PD_BEN_HEAD->ben_head).'</td>
                             <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->pres_amt).'</td>
                             <td style="border: 1px solid black; text-align: center; vertical-align: middle; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($value->app_amt).'</td>
                         </tr>';

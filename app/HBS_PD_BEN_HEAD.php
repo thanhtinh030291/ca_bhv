@@ -17,4 +17,8 @@ class HBS_PD_BEN_HEAD extends BaseModelDB2
 
     }
     
+    public function PD_BEN_HEAD_LANG()
+    {
+        return $this->hasOne('App\HBS_PD_BEN_HEAD_LANG','behd_oid', 'behd_oid');
+    }
 }
