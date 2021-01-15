@@ -130,7 +130,7 @@
 
 
     <tr>
-        <td colspan="2">
+        <td>
             <p class="font-weight-bold">Plan: </p>
             <div style="margin-left: 25px;">
                 @foreach ($member->plan as $item)
@@ -140,6 +140,9 @@
         </td>
         <td>
             <p class="font-weight-bold">Broker/Frontliner: {{data_get($HBS_CL_CLAIM->broker,'brkr_name_1')}} / {{data_get($HBS_CL_CLAIM->Frontliner,'brkr_name_1', "None")}}</p>
+        </td>
+        <td>
+            <p class="font-weight-bold">Claim No: {{$claim->code_claim_show}}</p>
         </td>
     </tr>
 </table>

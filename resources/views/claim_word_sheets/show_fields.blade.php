@@ -46,7 +46,7 @@
 
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <p class="font-weight-bold">Plan: </p>
         <div class="ml-5">
             @foreach ($member->plan as $item)
@@ -54,8 +54,11 @@
             @endforeach
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
     <p class="font-weight-bold">Broker/Frontliner: {{data_get($HBS_CL_CLAIM->broker,'brkr_name_1')}} / {{data_get($HBS_CL_CLAIM->Frontliner,'brkr_name_1', "None")}}</p>
+    </div>
+    <div class="col-md-4">
+        <p class="font-weight-bold">Claim No: {{$claim->code_claim_show}}</p>
     </div>
 </div>
 
@@ -172,7 +175,7 @@
             <div class="row">
                 <p class="col-md-1">BENEFIT </p> 
                 <div class="col-md-2">
-                    {{ Form::select('_benefit[content]', config('constants.benefit'),null, ["id" =>"benefit_content",'class'=>" select2 form-control " ]) }} 
+                    {{ Form::select('_benefit[content]', $benefit,null, ["id" =>"benefit_content",'class'=>" select2 form-control " ]) }} 
                 </div>
                 {{ Form::text('_type_of_visit[to]', '' , ["id" =>"benefit_to",'class'=>"imask-input form-control col-md-2" ]) }}
                 {{ Form::text('_benefit[amount]', null, ["id" =>"benefit_amount",'class'=>"item-price form-control col-md-2 "]) }}
