@@ -680,19 +680,83 @@ function getTokenCPS(){
     if($setting === null){
         $setting = Setting::create([]);
     }
-    $startTime = Carbon\Carbon::parse($setting->updated_at);
+    $startTime = Carbon\Carbon::parse($setting->created_token_cps_at);
     $now = Carbon\Carbon::now();
     $totalDuration = $startTime->diffInSeconds($now);
-    if($setting->token_cps == null || $totalDuration >= 3500){
+    if($setting->created_token_cps_at == null ||$setting->token_cps == null || $totalDuration >= 3500){
         $client = new \GuzzleHttp\Client([
             'headers' => $headers
         ]);
         $response = $client->request("POST", config('constants.api_cps').'get_token' , ['form_params'=>$body]);
         $response =  json_decode($response->getBody()->getContents());
         $setting->token_cps = data_get($response , 'access_token');
+        $setting->created_token_cps_at = $now->toDateTimeString();
         $setting->save();
     }
     return  $setting->token_cps;
+}
+
+// Get token sms
+function getTokenSms(){
+    $headers = [
+        'Content-Type' => 'application/json',
+    ];
+    $body = [
+        'client_id' => config('constants.client_id_sms'),
+        'client_secret' => config('constants.client_secret_sms'),
+        'grant_type' => config('constants.grant_type'),
+        'scope' => 'send_brandname_otp',
+        'session_id' => '789dC48b88e54f58ece5939f14a'
+    ];
+    $setting = Setting::where('id', 1)->first();
+    if($setting === null){
+        $setting = Setting::create([]);
+    }
+    $startTime = Carbon\Carbon::parse($setting->created_token_sms_at);
+    $now = Carbon\Carbon::now();
+    $totalDuration = $startTime->diffInSeconds($now);
+    if($setting->created_token_sms_at == null || $setting->token_sms == null || $totalDuration >= 3500){
+        $client = new \GuzzleHttp\Client([
+            'headers' => $headers
+        ]);
+        $response = $client->request("POST", config('constants.api_sms').'oauth2/token' , ['form_params'=>$body]);
+        $response =  json_decode($response->getBody()->getContents());
+        $setting->token_sms = data_get($response , 'access_token');
+        $setting->created_token_sms_at = $now->toDateTimeString();
+        $setting->save();
+    }
+    return  $setting->token_sms;
+}
+
+function sendSms($phone,$sms){
+    $token = getTokenSms();
+    $pattern = '/[^0-9]+/';
+    $num  = preg_replace($pattern, "", $phone);
+    $headers = [
+        'Content-Type' => 'application/json',
+    ];
+    $body = [
+        'access_token' => $token,
+        'session_id' => '789dC48b88e54f58ece5939f14a',
+        'BrandName' => 'PACIFICROSS',
+        'scope' => 'send_brandname_otp',
+        'Phone' => $num,
+        'Message' => base64_encode($sms)
+    ];
+
+    try {
+        $client = new \GuzzleHttp\Client([
+            'headers' => $headers
+        ]);
+        $response = $client->request("POST", config('constants.api_sms').'api/push-brandname-otp' , ['form_params'=>$body]);
+        $response =  json_decode($response->getBody()->getContents());
+        return $response;
+    }catch (GuzzleHttp\Exception\ClientException $e) {
+        $response = $e->getResponse()->getBody(true);
+        $response = json_decode((string)$response);
+        return $response;
+    }
+    
 }
 
 function typeGop($value){

@@ -125,8 +125,8 @@ class ClaimWordSheetController extends Controller
         });
         $count_bnf = $bnf->max() == null ? 0 : $bnf->max();
         //dd($member->MR_MEMBER_EVENT->where('scma_oid_event_code', 'EVENT_CODE_EXPL')->first());
-        
-        return view('claim_word_sheets.show', compact('claimWordSheet', 'claim', 'HBS_CL_CLAIM', 'member','claim_line', 'log_history', 'listReasonReject','count_bnf', 'MANTIS_BUG'));
+        $benefit = \App\HbsBenhead::pluck('name','name');
+        return view('claim_word_sheets.show', compact('claimWordSheet', 'claim', 'HBS_CL_CLAIM', 'member','claim_line', 'log_history', 'listReasonReject','count_bnf', 'MANTIS_BUG','benefit'));
     }
 
     public function pdf(ClaimWordSheet $claimWordSheet){

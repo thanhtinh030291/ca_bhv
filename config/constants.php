@@ -118,7 +118,17 @@ return[
     'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
     'url_hbs' => 'http://192.168.148.3:8010/',
     //end test
+    //sms
+    // 'api_sms' => 'http://sandbox.sms.fpt.net/',
+    // 'client_id_sms' => 'fA1804B43f07d997d4Ff9aB6879677f23204a397',
+    // 'client_secret_sms' => '5d9024b461cc2A8ff3d81cA7F70dd1ceb284D90c254a06dd90e9ae5c189f57eadaBb6551',
+    // //sms tesst
+    'api_sms' => 'http://app.sms.fpt.net/',
+    'client_id_sms' => '9e1fFba27Cf47ef6dF65e8ae837359f80d628268',
+    'client_secret_sms' => 'c653183a7879cdf62edb8abd87d1ef7d51d628fb47b8a02d2e88cdc539a3Ca4f7244b323',
+
     'grant_type' => 'client_credentials',
+
     'url_query_online' => 'https://pcvwebservice.pacificcross.com.vn/bluecross/query_rest.php?id=',
     'mount_dlvn' => "http://192.168.0.237/vprod/",
     'claim_result' => [

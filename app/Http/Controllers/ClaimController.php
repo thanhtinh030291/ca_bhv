@@ -33,6 +33,7 @@ use App\MANTIS_TEAM;
 use App\MANTIS_USER_GROUP;
 use App\MANTIS_USER;
 use App\HBS_MR_MEMBER;
+use App\SmsLog;
 use PDF;
 use App\MANTIS_BUG;
 use App\MANTIS_CUSTOM_FIELD_STRING;
@@ -759,36 +760,8 @@ class ClaimController extends Controller
             $export_letter->status = $status_change[0];
             $list_level = LevelRoleStatus::all();
             $level = $this->getLevel($export_letter, $list_level, $claim->claim_type);
-            if($claim->jetcase == 1 && $user->hasRole('QC')){
-                $per_approve_sign_replace = $claim_type == "P" ? getUserSignThumb() : getUserSign();
-                $approve_user_sign = $user->name;
-                if($export_letter->letter_template->letter_payment == null){
-                    $export_letter->approve = [  'user' => $user->id,
-                        'created_at' => Carbon::now()->toDateTimeString(),
-                        'data' => str_replace(['[[$per_approve_sign]]','[[$per_approve_sign_replace]]'], [$approve_user_sign,$per_approve_sign_replace], data_get($export_letter->wait, "data")),
-                    ];
-                }else{
-                    $export_letter->approve = [  'user' => $user->id,
-                        'created_at' => Carbon::now()->toDateTimeString(),
-                        'data' => str_replace(['[[$per_approve_sign]]','[[$per_approve_sign_replace]]'], [$approve_user_sign,$per_approve_sign_replace], data_get($export_letter->wait, "data")),
-                        'data_payment' => base64_encode($this->letterPayment($export_letter->letter_template->letter_payment , $request->claim_id , $id, 1, $user_create->supper)['content'])
-                    ];
-                    
-                }
-                //save log approve 
+            if($level->signature_accepted_by == $status_change[0] || ($user_create->hasRole('Claim Independent') && $user->hasRole('Manager'))){
                 
-                $export_letter->log_hbs_approved()->update([
-                    'approve' => json_encode([
-                        'user' => $user->id,
-                        'created_at' => Carbon::now()->toDateTimeString(),
-                        'MANTIS_ID' => $claim->barcode,
-                        'MEMB_NAME' => $HBS_CL_CLAIM->MemberNameCap,
-                        'POCY_REF_NO' =>  $HBS_CL_CLAIM->police->pocy_ref_no,
-                        'MEMB_REF_NO' => $HBS_CL_CLAIM->member->memb_ref_no,
-                    ])
-                ]);
-
-            }elseif($level->signature_accepted_by == $status_change[0] || ($user_create->hasRole('Claim Independent') && $user->hasRole('Manager'))){
                 $per_approve_sign_replace = $claim_type == "P" ? getUserSignThumb() : getUserSign();
                 $approve_user_sign = $user->name;
                 if($export_letter->letter_template->letter_payment == null){
@@ -816,6 +789,9 @@ class ClaimController extends Controller
                         'MEMB_REF_NO' => $HBS_CL_CLAIM->member->memb_ref_no,
                     ])
                 ]);
+                //save sms table
+                $this->writeDbSms($HBS_CL_CLAIM,$claim); 
+                
             }elseif($user_create->hasRole('Claim Independent')){
                 if($request->status_change == 14 || $request->status_change == 26 ){
                     if($export_letter->letter_template->letter_payment == null){
@@ -842,6 +818,10 @@ class ClaimController extends Controller
                             'MEMB_REF_NO' => $HBS_CL_CLAIM->member->memb_ref_no,
                         ])
                     ]);
+
+                    //input data sms
+                    $this->writeDbSms($HBS_CL_CLAIM,$claim); 
+
                 }
             }
             
@@ -2480,5 +2460,30 @@ class ClaimController extends Controller
             'updated_user' => $user->id,
         ]);
         return redirect('/admin/claim/'.$id)->with('status', 'Đã Close Claim thành công');
+    }
+
+    public function writeDbSms($HBS_CL_CLAIM, $claim){
+        if($HBS_CL_CLAIM->sumAppAmt > 0){
+            SmsLog::create(
+            [
+                'CL_NO' => $claim->code_claim_show,
+                'MEMB_NAME'     => $claim->member_name,
+                'PAYMENT_METHOD'     => $HBS_CL_CLAIM->PayMethod,
+                'TF_AMT'    => $HBS_CL_CLAIM->sumAppAmt,
+                'ACCT_NAME'     => $HBS_CL_CLAIM->FirstLine->acct_name,
+                'ACCT_NO'     => $HBS_CL_CLAIM->FirstLine->acct_no,
+                'BANK_NAME'     => $HBS_CL_CLAIM->FirstLine->bank_name,
+                'BANK_CITY'     => $HBS_CL_CLAIM->FirstLine->bank_city,
+                'BANK_BRANCH'     => $HBS_CL_CLAIM->FirstLine->bank_branch,
+                'BENEFICIARY_NAME'     => $HBS_CL_CLAIM->FirstLine->beneficiary_name,
+                'PP_DATE'     => $HBS_CL_CLAIM->FirstLine->id_passport_date_of_issue,
+                'PP_PLACE'     => $HBS_CL_CLAIM->FirstLine->id_passport_issue_place,
+                'PP_NO'     => $HBS_CL_CLAIM->FirstLine->id_passport_no,
+                'IsSent'     => 0,
+                'Phone' => $HBS_CL_CLAIM->member->mobile_no,
+                'SCMA_OID_COUNTRY_ISSUE' => ($HBS_CL_CLAIM->member->scma_oid_country_issue == 'COUNTRY_084' || $HBS_CL_CLAIM->member->scma_oid_country_issue) ? 'vn' : 'en'
+                
+            ]);
+        }
     }
 }
