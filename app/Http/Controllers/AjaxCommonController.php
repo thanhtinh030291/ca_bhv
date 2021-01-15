@@ -496,7 +496,7 @@ class AjaxCommonController extends Controller
                 case 'amt_dis_yr':
                     if( isset($message['T_CT']['amt_dis_yr'])){
                         foreach ($message['T_CT']['amt_dis_yr'] as $key => $value) {
-                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc_vn;
+                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc;
                             $format_value = formatPrice($value);
                             $message['T_CT']['amt_dis_life'][$key] = [
                                 'max_limit' => $value ,
@@ -506,7 +506,7 @@ class AjaxCommonController extends Controller
                     }
                     if( isset($message['H_CH']['amt_dis_yr'])){
                         foreach ($message['H_CH']['amt_dis_yr'] as $key => $value) {
-                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc_vn;
+                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc;
                             foreach ($value as $key2 => $value2) {
                                 $format_value = formatPrice($value2);
                                 $message['H_CH']['amt_dis_yr'][$key][$key2] = [
@@ -520,7 +520,7 @@ class AjaxCommonController extends Controller
                 case 'amt_dis_life':
                     if( isset($message['T_CT']['amt_dis_life'])){
                         foreach ($message['T_CT']['amt_dis_life'] as $key => $value) {
-                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc_vn;
+                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc;
                             $format_value = formatPrice($value);
                             $message['T_CT']['amt_dis_life'][$key] = [
                                 'max_limit' => $value ,
@@ -530,7 +530,7 @@ class AjaxCommonController extends Controller
                     }
                     if( isset($message['H_CH']['amt_dis_life'])){
                         foreach ($message['H_CH']['amt_dis_life'] as $key => $value) {
-                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc_vn;
+                            $name_diag = $HBS_RT_DIAGNOSIS->where('diag_oid',$key)->first()->diag_desc;
                             foreach ($value as $key2 => $value2) {
                                 $format_value = formatPrice($value2);
                                 $message['H_CH']['amt_dis_life'][$key][$key2] = [
@@ -683,8 +683,8 @@ class AjaxCommonController extends Controller
         $data = [];
         if($request->has('q')){
             $search = mb_strtolower($request->q);
-            $datas = HBS_RT_DIAGNOSIS::where('diag_desc_vn','LIKE',"%$search%")->orWhere('diag_code','LIKE',"%$search%")
-                    ->select(DB::raw("diag_oid  as id, diag_code ||'-'|| diag_desc_vn as text"))
+            $datas = HBS_RT_DIAGNOSIS::where('diag_desc','LIKE',"%$search%")->orWhere('diag_code','LIKE',"%$search%")
+                    ->select(DB::raw("diag_oid  as id, diag_code ||'-'|| diag_desc as text"))
                     ->limit(100)->get();
             
             
@@ -1033,7 +1033,7 @@ class AjaxCommonController extends Controller
         $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
         $template = $match_form_gop ? 'templateEmail.sendProviderTemplate_input' : 'templateEmail.sendProviderTemplate_output';
         
-        $data['diag_text'] = implode(",",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('RT_DIAGNOSIS.diag_desc_vn')->unique()->toArray());
+        $data['diag_text'] = implode(",",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('RT_DIAGNOSIS.diag_desc')->unique()->toArray());
         $incurDateTo = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_to);
         $incurDateFrom = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_from);
         $data['incurDateTo'] = $incurDateTo->format('d-m-Y');
@@ -1047,7 +1047,7 @@ class AjaxCommonController extends Controller
         ]);
 
         $data['HBS_CL_CLAIM'] = $HBS_CL_CLAIM;
-        $data['Diagnosis'] = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc_vn;
+        $data['Diagnosis'] = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc;
         $html = view($template, compact('data'))->render();
         return response()->json([ 'data' => $html]);
     }

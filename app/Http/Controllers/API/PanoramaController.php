@@ -58,7 +58,7 @@ class PanoramaController extends Controller
             $data['claim_history'][$key]['claim_oid'] =  $item->clam_oid;
             $data['claim_history'][$key]['date'] = Carbon::parse($item->incur_date_from)->format('d/m/Y') .' - '.Carbon::parse($item->incur_date_to)->format('d/m/Y');
             $data['claim_history'][$key]['prov_name'] =  $item->prov_name;
-            $data['claim_history'][$key]['diagnosis'] = $item->RT_DIAGNOSIS->diag_desc_vn;
+            $data['claim_history'][$key]['diagnosis'] = $item->RT_DIAGNOSIS->diag_desc;
             $data['claim_history'][$key]['treatment'] = str_replace("BENEFIT_TYPE_", "", $item->PD_BEN_HEAD->scma_oid_ben_type) . ' - ' . $item->PD_BEN_HEAD->ben_head;
             $data['claim_history'][$key]['app_amt'] = formatPrice($item->app_amt);            
         }

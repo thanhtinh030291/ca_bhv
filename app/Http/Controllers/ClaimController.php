@@ -1372,7 +1372,7 @@ class ClaimController extends Controller
         $diffIncur = data_get($claim->hospital_request,'incur_time',null) ?  data_get($claim->hospital_request,'incur_time') : $total_incur_hbs ;
         $incurDateTo = data_get($claim->hospital_request,'incur_to',null) ?  data_get($claim->hospital_request,'incur_to') : $incurDateTo->format('d/m/Y') ;
         $incurDateFrom = data_get($claim->hospital_request,'incur_from',null) ?  data_get($claim->hospital_request,'incur_from') : $incurDateFrom->format('d/m/Y') ;
-        $Diagnosis = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc_vn;
+        $Diagnosis = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc;
         $diffIncur_extb = data_get($claim->hospital_request,'incur_time_extb',null) ?  "/".data_get($claim->hospital_request,'incur_time_extb') : "" ;
         $content = $letter->template;
         $content = str_replace('[[$ProvPstAmt]]', formatPrice(data_get($claim->hospital_request,'prov_gop_pres_amt')), $content);
@@ -2315,7 +2315,7 @@ class ClaimController extends Controller
         $mpdf = null;
         $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
         $subject = 'Thư bảo lãnh .';
-        $diag_text = implode(",",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('RT_DIAGNOSIS.diag_desc_vn')->unique()->toArray());
+        $diag_text = implode(",",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('RT_DIAGNOSIS.diag_desc')->unique()->toArray());
         
         $request2 = new Request([
             'diag_code' => $diag_code,
@@ -2390,7 +2390,7 @@ class ClaimController extends Controller
         $data['diffIncur'] = $diffIncur;
         $data['old_msg'] = $old_msg;
         $data['HBS_CL_CLAIM'] = $HBS_CL_CLAIM;
-        $data['Diagnosis'] = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc_vn;
+        $data['Diagnosis'] = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc;
         $data['attachment']['base64'] =  base64_encode($mpdf->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN)) ;
         $data['attachment']['filename'] = $namefile . ".pdf";
         $data['attachment']['filetype'] = "application/pdf";

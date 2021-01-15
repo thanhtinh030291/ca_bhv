@@ -433,14 +433,14 @@ function IOPDiag($HBS_CL_CLAIM, $claim_id){
                     case 'BENEFIT_TYPE_OP':
                         $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
                         $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: " . $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
+                        $IOPDiag[] = "Chẩn đoán: " . $value->RT_DIAGNOSIS->diag_desc ." <br>
                                     Ngày khám: $from_date tại ". $value->prov_name . ".";
     
                         break;
                     case 'BENEFIT_TYPE_IP':
                         $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
                         $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: ". $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
+                        $IOPDiag[] = "Chẩn đoán: ". $value->RT_DIAGNOSIS->diag_desc ." <br>
                                 Ngày nhập viện: $from_date, ngày xuất viện:  $to_date tại ". $value->prov_name. ".";
                         break;
                     default:
@@ -472,13 +472,13 @@ function IOPDiagWookSheet($HBS_CL_CLAIM){
                 case 'BENEFIT_TYPE_OP':
                     $IOPDiag[$key]['from'] = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
                     $IOPDiag[$key]['to'] = null;
-                    $IOPDiag[$key]['diagnosis'] = $value->RT_DIAGNOSIS->diag_desc_vn;
+                    $IOPDiag[$key]['diagnosis'] = $value->RT_DIAGNOSIS->diag_desc;
                     $IOPDiag[$key]['prov_name'] = $value->prov_name;
                     break;
                 case 'BENEFIT_TYPE_IP':
                     $IOPDiag[$key]['from'] = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
                     $IOPDiag[$key]['to'] = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                    $IOPDiag[$key]['diagnosis'] = $value->RT_DIAGNOSIS->diag_desc_vn;
+                    $IOPDiag[$key]['diagnosis'] = $value->RT_DIAGNOSIS->diag_desc;
                     $IOPDiag[$key]['prov_name'] = $value->prov_name;
                     break;
                 default:
