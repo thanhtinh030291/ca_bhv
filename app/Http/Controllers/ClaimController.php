@@ -181,7 +181,9 @@ class ClaimController extends Controller
     {
         $claim_type = $request->claim_type;
         //validate
-        $issue = MANTIS_CUSTOM_FIELD_STRING::where('value',(int)$request->barcode)->where('field_id',14)->get();
+        
+        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id',(int)$request->barcode)->where('field_id',14)->get();
+        
         if($issue->count() != 1){
             $request->session()->flash('errorStatus', 'Phải tồn tại duy nhất 1 Common ID trên Health Etalk ');
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
@@ -419,7 +421,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear DLVN, \n Đính kèm là hồ sơ GOP. \n Thanks,",
+                'text_note' => " Dear CATHAY, \n Đính kèm là hồ sơ GOP. \n Thanks,",
             ];
             $handle = fopen(storage_path("app/public/sortedClaim/{$dataUpdate['url_file_sorted']}"),'r');
             $treamfile = stream_get_contents($handle);
@@ -1174,15 +1176,35 @@ class ClaimController extends Controller
         }
         
         if($claim->claim_type == "M"){
-            header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            header("Expires: 0");//no-cache
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
-            header("content-disposition: attachment;filename={$data['namefile']}.doc");
-            echo "<html>";      
-            echo "<body>";
-            echo $data['content'];
-            echo "</body>";
-            echo "</html>";
+            $match_pdf = preg_match('/(Giấy giới thiệu)/', $export_letter->letter_template->name , $matches_pdf);
+            if($match_pdf){
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+                $mpdf->WriteHTML('
+                <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
+                    <img src="'.asset("images/header.jpg").'" alt="head">
+                </div>');
+                $mpdf->SetHTMLFooter('
+                <div style="text-align: right; font-weight: bold;">
+                    <img src="'.asset("images/footer.png").'" alt="foot">
+                </div>');
+                $mpdf->WriteHTML($data['content']);
+                header("Content-Type: application/pdf");
+                header("Expires: 0");//no-cache
+                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
+                header("content-disposition: attachment;filename={$data['namefile']}.pdf");
+                echo $mpdf->Output($data['namefile'].'.pdf',\Mpdf\Output\Destination::STRING_RETURN);
+
+            }else{
+                header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                header("Expires: 0");//no-cache
+                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
+                header("content-disposition: attachment;filename={$data['namefile']}.doc");
+                echo "<html>";      
+                echo "<body>";
+                echo $data['content'];
+                echo "</body>";
+                echo "</html>";
+            }
         }else{
             $data['content'] = "<html><body>".$data['content']."</body></html>";
             //$create_user_sign = getUserSignThumb($export_letter->created_user);
@@ -1309,7 +1331,6 @@ class ClaimController extends Controller
     }
     // export letter
     public function letter($letter_template_id , $claim_id ,$export_letter_id = null){
-        
         $letter = LetterTemplate::findOrFail($letter_template_id);
         $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
@@ -1351,6 +1372,7 @@ class ClaimController extends Controller
             $paymentAmt = $sumAppAmt - $sum_tf_amt;
         }
         $Provider = $HBS_CL_CLAIM->FirstLine;
+        
         $prov_address = array_filter([
             $Provider->addr1,
             $Provider->addr2,
@@ -1418,6 +1440,7 @@ class ClaimController extends Controller
         $content = str_replace('[[$PoNo]]', $police->pocy_no, $content);
         $content = str_replace('[[$EffDate]]', Carbon::parse($police->eff_date)->format('d/m/Y'), $content);
         $content = str_replace('[[$now]]', datepayment(), $content);
+        $content = str_replace('[[$nowVn]]', dateNowVn(), $content);
 
         $content = str_replace('[[$invoicePatient]]', implode(" ",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('inv_no')->toArray()) , $content);
         if($CSRRemark){
@@ -2188,7 +2211,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear DLVN, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
+                'text_note' => " Dear CATHAY, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
     
             ];
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
