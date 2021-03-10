@@ -625,6 +625,12 @@ function datepayment(){
     }
     return $now->format("d/m/Y");
 }
+
+function dateNowVn(){
+    $now = Carbon\Carbon::now();
+    return "Ngày ".$now->day." Tháng ".$now->month." Năm ".$now->year;
+}
+
 function notifi_system($content, $arrUserID = []){
     $user = App\User::findOrFail(1);
     $options = array(
