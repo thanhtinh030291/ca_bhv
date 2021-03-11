@@ -26,7 +26,18 @@ class Term extends BaseModel
                 'group' => explode(".", $this->name)[0],
                 'num'   => explode(".", $this->name)[1],
                 'name' => $this->name,
-                'content' => '<p style="text-align: justify;"><span style="font-family: arial, helvetica, sans-serif;">Điều ' .$this->name ." ". preg_replace('/(<p>)/', "", $this->description.'</span>', 1)
+                'content' => '<p style="text-align: justify;"><span style="font-family: arial, helvetica, sans-serif;">' .$this->name ." ". preg_replace('/(<p>)/', "", $this->description.'</span>', 1)
+            ];
+        return $q;
+    }
+
+    public function getFullTextTermENAttribute(){
+
+        $q = [  
+                'group' => explode(".", $this->name)[0],
+                'num'   => explode(".", $this->name)[1],
+                'name' => $this->name,
+                'content' => '<p style="text-align: justify;"><span style="font-family: arial, helvetica, sans-serif;">' .$this->name ." ". preg_replace('/(<p>)/', "", $this->description_en.'</span>', 1)
             ];
         return $q;
     }

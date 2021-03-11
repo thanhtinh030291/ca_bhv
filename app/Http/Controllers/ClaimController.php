@@ -182,8 +182,7 @@ class ClaimController extends Controller
         $claim_type = $request->claim_type;
         //validate
         
-        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id',(int)$request->barcode)->where('field_id',14)->get();
-        
+        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id', (int)$request->barcode)->where('field_id', 14)->get();
         if($issue->count() != 1){
             $request->session()->flash('errorStatus', 'Phải tồn tại duy nhất 1 Common ID trên Health Etalk ');
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
@@ -1335,7 +1334,6 @@ class ClaimController extends Controller
         $claim  = Claim::itemClaimReject()->findOrFail($claim_id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
         $namefile = Str::slug("{$letter->name}_{$HBS_CL_CLAIM->memberNameCap}", '-');
-        $IOPDiag = IOPDiag($HBS_CL_CLAIM, $claim_id);
         $benefitOfClaim = benefitOfClaim($HBS_CL_CLAIM);
         $police = $HBS_CL_CLAIM->Police;
         $policyHolder = $HBS_CL_CLAIM->policyHolder;
@@ -1343,11 +1341,13 @@ class ClaimController extends Controller
         $barcode = '<barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />'
         .'<p style="text-align: right;">'.$claim->barcode.'</p>';
         $CSRRemark_TermRemark = CSRRemark_TermRemark($claim);
-
+        $CSRRemark_TermRemark_en = CSRRemark_TermRemark($claim, 'en');
         $plan = $HBS_CL_CLAIM->plan;
         $CSR_REMASK_ALL_LINE = $HBS_CL_CLAIM->remark;
         $CSRRemark = $CSRRemark_TermRemark['CSRRemark'];
+        $CSRRemark_en = $CSRRemark_TermRemark_en['CSRRemark'];
         $TermRemark = $CSRRemark_TermRemark['TermRemark'];
+        $TermRemark_en = $CSRRemark_TermRemark_en['TermRemark'];
         $itemsReject = $CSRRemark_TermRemark['itemsReject'];
         $sumAmountReject = $CSRRemark_TermRemark['sumAmountReject'];
         $sumAppAmt = (int)$HBS_CL_CLAIM->sumAppAmt ;
@@ -1379,7 +1379,7 @@ class ClaimController extends Controller
             $Provider->addr3,
             $Provider->addr4,
         ]);
-        $tableInfo = $this->tableInfoPayment($HBS_CL_CLAIM);
+        
         $incurDateTo = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_to);
         $incurDateFrom = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_from);
         $RBGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['RB'])->sum('app_amt');
@@ -1396,6 +1396,7 @@ class ClaimController extends Controller
         $incurDateFrom = data_get($claim->hospital_request,'incur_from',null) ?  data_get($claim->hospital_request,'incur_from') : $incurDateFrom->format('d/m/Y') ;
         $Diagnosis = data_get($claim->hospital_request,'diagnosis',null) ?  data_get($claim->hospital_request,'diagnosis') : $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc;
         $diffIncur_extb = data_get($claim->hospital_request,'incur_time_extb',null) ?  "/".data_get($claim->hospital_request,'incur_time_extb') : "" ;
+        $deniedAmt = $HBS_CL_CLAIM->sumPresAmt - (int)$sumAppAmt;
         $content = $letter->template;
         $content = str_replace('[[$ProvPstAmt]]', formatPrice(data_get($claim->hospital_request,'prov_gop_pres_amt')), $content);
         $content = str_replace('[[$ProDeniedAmt]]', formatPrice($sumAmountReject), $content);
@@ -1424,30 +1425,54 @@ class ClaimController extends Controller
         $content = str_replace('[[$note_pay]]', $note_pay, $content);
         $content = str_replace('[[$applicantName]]', $HBS_CL_CLAIM->applicantName, $content);
         $content = str_replace('[[$benefitOfClaim]]', $benefitOfClaim , $content);
-        $content = str_replace('[[$IOPDiag]]', $IOPDiag , $content);
+        $content = str_replace('[[$IOPDiag]]', IOPDiag($HBS_CL_CLAIM, $claim_id) , $content);
+        $content = str_replace('[[$IOPDiag_en]]', IOPDiag($HBS_CL_CLAIM, $claim_id, 'en') , $content);
         $content = str_replace('[[$PRefNo]]', $police->pocy_ref_no, $content);
         $content = str_replace('[[$PhName]]', $policyHolder->poho_name_1, $content);
         $content = str_replace('[[$memberNameCap]]', $HBS_CL_CLAIM->memberNameCap, $content);
         $content = str_replace('[[$ltrDate]]', getVNLetterDate(), $content);
-        $content = str_replace('[[$nowDay]]', Carbon::now()->toDateString(), $content);
+        $content = str_replace('[[$nowDay]]', Carbon::now()->format('d/m/Y'), $content);
         $content = str_replace('[[$pstAmt]]', formatPrice($HBS_CL_CLAIM->sumPresAmt), $content);
         $content = str_replace('[[$payMethod]]', $payMethod, $content);
-        $content = str_replace('[[$deniedAmt]]', formatPrice($HBS_CL_CLAIM->sumPresAmt - (int)$sumAppAmt) , $content);
+        $content = str_replace('[[$deniedAmt]]', formatPrice($deniedAmt) , $content);
         $content = str_replace('[[$claimNo]]', $claim->code_claim_show , $content);
         $content = str_replace('[[$memRefNo]]', $HBS_CL_CLAIM->member->memb_ref_no , $content);
+        $content = str_replace('[[$memNo]]', $HBS_CL_CLAIM->member->mbr_no , $content);
         $content = str_replace('[[$DOB]]', Carbon::parse($HBS_CL_CLAIM->member->dob)->format('d/m/Y') , $content);
         $content = str_replace('[[$SEX]]', str_replace('SEX_', "",$HBS_CL_CLAIM->member->scma_oid_sex) , $content);
         $content = str_replace('[[$PoNo]]', $police->pocy_no, $content);
         $content = str_replace('[[$EffDate]]', Carbon::parse($police->eff_date)->format('d/m/Y'), $content);
         $content = str_replace('[[$now]]', datepayment(), $content);
         $content = str_replace('[[$nowVn]]', dateNowVn(), $content);
+        $htm_infoReject = "";
+        $htm_infoReject_en = "";
+        if ($deniedAmt != 0 || $CSRRemark) {
+            $htm_infoReject = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
+            Số tiền không được bồi thường:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VNĐ</strong>" .
+            "</span></p>" . 
+            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Diễn giãi:</span></p>" .
+            implode('', $CSRRemark) .
+            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Quý khách vui lòng tham khảo (các) điều khoản sau:</span></p>" .
+            implode('', array_unique($TermRemark));
+
+            $htm_infoReject_en = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
+            Rejection amount:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VND</strong>" .
+            "</span></p>" . 
+            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Description:</span></p>" .
+            implode('', $CSRRemark_en) .
+            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Please kindly refer to the below condition(s):</span></p>" .
+            implode('', array_unique($TermRemark_en));
+        }
+        $content = str_replace('[[$infoReject]]', $htm_infoReject , $content);
+        $content = str_replace('[[$infoReject_en]]', $htm_infoReject_en , $content);
 
         $content = str_replace('[[$invoicePatient]]', implode(" ",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('inv_no')->toArray()) , $content);
         if($CSRRemark){
             $content = str_replace('[[$CSRRemark]]', implode('',$CSRRemark) , $content);
             $content = str_replace('[[$TermRemark]]', implode('',array_unique($TermRemark)) , $content);
         }
-        $content = str_replace('[[$tableInfoPayment]]', $tableInfo , $content);
+        $content = str_replace('[[$tableInfoPayment]]', $this->tableInfoPayment($HBS_CL_CLAIM) , $content);
+        $content = str_replace('[[$tableInfoPayment_en]]', $this->tableInfoPayment($HBS_CL_CLAIM,'en') , $content);
         $content = str_replace('[[$apvAmt]]', formatPrice((int)$sumAppAmt), $content);
         $content = str_replace('[[$time_pay]]', $time_pay, $content);
         $content = str_replace('[[$paymentAmt]]', formatPrice($paymentAmt), $content);
@@ -1455,11 +1480,18 @@ class ClaimController extends Controller
         
     }
 
-    function tableInfoPayment($HBS_CL_CLAIM){
+    function tableInfoPayment($HBS_CL_CLAIM , $lang = null){
         $sum_pre_amt = 0;
         $sum_app_amt = 0;
-        $HbsBenhead = \App\HbsBenhead::pluck('desc_vn','code');
+        if($lang == 'en'){
+            $HbsBenhead = \App\HbsBenhead::pluck('desc_en','code');
+        }else{
+            $HbsBenhead = \App\HbsBenhead::pluck('desc_vn','code');
+        }
         
+        $col_benefit = $lang == 'en' ? 'Benefits' : 'Quyền lợi bảo hiểm';
+        $col_submitted_amount = $lang == 'en' ? 'Submitted amount<br>(in VND)' : 'Số tiền yêu cầu bồi thường <br> (bằng VNĐ)';
+        $col_paid_amount = $lang == 'en' ? 'Paid amount<br>(Based on validity documents)<br>(in VND)' : 'Số tiền bồi thường<br>(Căn cứ trên chứng từ hợp lệ)<br>(bằng VNĐ)';
         $html = '
         <style type="text/css">
             table { page-break-inside:auto ; font-size: 11pt; font-family: arial, helvetica, sans-serif;}
@@ -1470,13 +1502,9 @@ class ClaimController extends Controller
                 <table style=" border: 1px solid black; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt" rowspan="2">Quyền lợi</th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền yêu cầu bồi thường (Căn cứ trên chứng từ hợp lệ) </th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền thanh toán</th>
-                        </tr>
-                        <tr>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Đồng</th>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Đồng</th>
+                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt" rowspan="2">'.$col_benefit.'</th>
+                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$col_submitted_amount.'</th>
+                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$col_paid_amount.'</th>
                         </tr>
                     <thead>';
         $IP = [];
@@ -1501,7 +1529,7 @@ class ClaimController extends Controller
             // nội trú
         foreach ($IP as $keyIP => $valueIP) {
             $html .= '<tr>
-                    <td style="border: 1px solid black; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Nội Trú</td>
+                    <td style="border: 1px solid black; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'. ($lang == 'en' ? 'Inpatient': 'Nội Trú') .'</td>
                     <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                     <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                 </tr>';
@@ -1525,7 +1553,7 @@ class ClaimController extends Controller
             if($key == 0){
                 
                 $html .= '<tr>
-                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Ngoại Trú</td>
+                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.($lang == 'en' ? 'Outpatient' : 'Ngoại Trú').'</td>
                             <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                             <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                         </tr>';
@@ -1544,7 +1572,7 @@ class ClaimController extends Controller
             if($key == 0){
                 
                 $html .= '<tr>
-                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Răng</td>
+                            <td style="border: 1px solid black ; font-weight:bold; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.($lang == 'en' ? 'Dental' : 'Răng').'</td>
                             <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                             <td style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt"></td>
                         </tr>';
@@ -1558,7 +1586,7 @@ class ClaimController extends Controller
             $sum_app_amt += $value->app_amt;
         }
             $html .=    '<tr>
-                            <th style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt" >Tổng cộng:</th>
+                            <th style="border: 1px solid black ;font-family: arial, helvetica, sans-serif ; font-size: 11pt" >'.($lang == 'en' ? 'Tatol: ': 'Tổng cộng: ').'</th>
                             
                             <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.formatPrice($sum_pre_amt).'</th>
                             <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">[[$time_pay]]</th>

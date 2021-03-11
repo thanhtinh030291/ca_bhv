@@ -107,8 +107,8 @@ class SettingController extends Controller
             $HbsBenhead = HbsBenhead::updateOrCreate([
                 'code'   => $value->ben_head,
             ],[
-                'desc_vn'     => $value->PD_BEN_HEAD_LANG->code_desc_vn,
-                'desc_en'     => $value->PD_BEN_HEAD_LANG->code_desc,
+                'desc_vn'     => $value->PD_BEN_HEAD_LANG != null ? $value->PD_BEN_HEAD_LANG->code_desc_vn : null,
+                'desc_en'     => $value->PD_BEN_HEAD_LANG != null ? $value->PD_BEN_HEAD_LANG->code_desc : null,
                 'ben_type'    => str_replace('BENEFIT_TYPE_',"",$value->scma_oid_ben_type),
                 'name'     => numberToRomanRepresentation($value->ben_head)
             ]);

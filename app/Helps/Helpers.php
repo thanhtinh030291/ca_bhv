@@ -424,41 +424,40 @@ function payMethod($HBS_CL_CLAIM){
 
 // print letter IOPDiag
 
-function IOPDiag($HBS_CL_CLAIM, $claim_id){
+function IOPDiag($HBS_CL_CLAIM, $claim_id , $lang = null){
     $IOPDiag = [];
         $ClaimWordSheet = App\ClaimWordSheet::where('claim_id',$claim_id)->first();
-        if(data_get($ClaimWordSheet,'type_of_visit') == null || data_get($ClaimWordSheet,'type_of_visit') == []){
-            foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $key => $value) {
-                switch ($value->PD_BEN_HEAD->scma_oid_ben_type) {
-                    case 'BENEFIT_TYPE_OP':
-                        $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                        $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: " . $value->RT_DIAGNOSIS->diag_desc ." <br>
-                                    Ngày khám: $from_date tại ". $value->prov_name . ".";
-    
-                        break;
-                    case 'BENEFIT_TYPE_IP':
-                        $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                        $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: ". $value->RT_DIAGNOSIS->diag_desc ." <br>
-                                Ngày nhập viện: $from_date, ngày xuất viện:  $to_date tại ". $value->prov_name. ".";
-                        break;
-                    default:
-    
-                        break;
-                }
-            }
-        }else{
-            
-            foreach(data_get($ClaimWordSheet,'type_of_visit') as $key => $value){
-                if(data_get($value,'to') == null){
-                    $IOPDiag[] = "Chẩn đoán: " . data_get($value,'diagnosis') ." <br>
-                                Ngày khám: ".data_get($value,'from')." tại ". data_get($value,'prov_name') . ".";
-
-                }else{
-                    $IOPDiag[] = "Chẩn đoán: ".data_get($value,'diagnosis') ." <br>
-                            Ngày nhập viện: ".data_get($value,'from').", ngày xuất viện:  ".data_get($value,'to')." tại ". data_get($value,'prov_name'). ".";
-                }
+        foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $key => $value) {
+            switch ($value->PD_BEN_HEAD->scma_oid_ben_type) {
+                case 'BENEFIT_TYPE_OP':
+                    $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
+                    $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
+                    if($lang == null || $lang == 'vn'){
+                        $IOPDiag[] = "Ngày điều trị: $from_date <br>".
+                        "Chẩn đoán: " . ($value->RT_DIAGNOSIS->diag_desc_vn == null ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn)." <br>".
+                        'Nơi điều trị: '.$value->prov_name." <br>";
+                    }else{
+                        $IOPDiag[] = "Treatment period: $from_date <br>".
+                        "Diagnosis: " . $value->RT_DIAGNOSIS->diag_desc ." <br>".
+                        'Place of treatment: '.$value->prov_name." <br>";
+                    }
+                    
+                    break;
+                case 'BENEFIT_TYPE_IP':
+                    $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
+                    $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
+                    if($lang == null || $lang == 'vn'){
+                        $IOPDiag[] = "Ngày điều trị: $from_date - $to_date<br>".
+                        "Chẩn đoán: " . ($value->RT_DIAGNOSIS->diag_desc_vn == null ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn) ." <br>".
+                        'Nơi điều trị: '.$value->prov_name." <br>";
+                    }else{
+                        $IOPDiag[] = "Treatment period: $from_date - $to_date <br>".
+                        "Diagnosis: " . $value->RT_DIAGNOSIS->diag_desc ." <br>".
+                        'Place of treatment: '.$value->prov_name." <br>";
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     $IOPDiag = implode('<br>', array_unique($IOPDiag));
@@ -514,7 +513,7 @@ function benefitOfClaim($HBS_CL_CLAIM){
 
 // print CRRMArk AND TERM
 
-function CSRRemark_TermRemark($claim){
+function CSRRemark_TermRemark($claim ,$lang = null){
     $CSRRemark = [];
     $TermRemark = [];
     $hasTerm3 = null;
@@ -532,9 +531,9 @@ function CSRRemark_TermRemark($claim){
     $itemOfClaim = $claim->item_of_claim->groupBy('reason_reject_id');
     $templateHaveMeger = [];
     foreach ($itemOfClaim as $key => $value) {
-        $template = $value[0]->reason_reject->template;
+        $template = $lang == 'en' ?  $value[0]->reason_reject->template_en : $value[0]->reason_reject->template;
         if(isset($value[0]->reason_reject->term->fullTextTerm)){
-            $TermRemark[] = $value[0]->reason_reject->term->fullTextTerm;
+            $TermRemark[] = $lang == 'en' ? $value[0]->reason_reject->term->fullTextTermEn : $value[0]->reason_reject->term->fullTextTerm;
         }
         
         if (!preg_match('/\[Begin\].*\[End\]/U', $template)){
@@ -568,17 +567,7 @@ function CSRRemark_TermRemark($claim){
     $TermRemark = collect($TermRemark)->sortBy('group')->groupBy('group');
     $show_term = [];
     foreach ($TermRemark as $key => $value) {
-        switch ($key) {
-            case '3':
-                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo Điều 3_ Các quy định loại trừ trách nhiệm bảo hiểm của Quy tắc và điều khoản bảo hiểm Chăm sóc sức khỏe: “Dai-ichi Life Việt Nam sẽ không thanh toán quyền lợi điều trị nội trú và điều trị ngoại trú theo quy định tại Điều 2 của Quy tắc, Điều khoản sản phẩm bổ sung này nếu việc điều trị Bệnh tật/Thương tật của Người được bảo hiểm thuộc bất kỳ trường hợp hoặc sự việc nào sau đây”: </span></p>";
-                break;
-            case '2':
-                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo Điều 2_ Các quyền lợi bảo hiểm của Quy tắc và Điều khoản bảo hiểm Chăm sóc sức khỏe:</span></p>";
-                break;
-            default:
-                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo Điều 1_ Các định nghĩa của Quy tắc và Điều khoản bảo hiểm Chăm sóc sức khỏe:</span></p>";
-                break;
-        }
+        
         $collect_value = collect($value)->sortBy('num');
         foreach ($collect_value as $key_c => $value_c) {
             $show_term[] = $value_c['content'];
