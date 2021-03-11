@@ -25,7 +25,7 @@
                     {{ Form::textarea('description', old('description'), [ 'class' => 'form-control editor','placeholder' => __('message.name'), 'required']) }}<br/>
 
                     {{ Form::label('description', __('message.description') . " EN", array('class' => 'labelas')) }} <span class="text-danger">*</span>
-                    {{ Form::textarea('description_en', old('description_en'), [ 'class' => 'form-control editor','placeholder' => __('message.name'), 'required']) }}<br/>
+                    {{ Form::textarea('description_en', old('description_en'), [ 'class' => 'form-control editor','placeholder' => __('message.name')]) }}<br/>
                 <div class="text-center tour-button">
                     <a class="btn btnt btn-secondary" href="{{url('admin/term')}}">
                         {{ __('message.back')}}
