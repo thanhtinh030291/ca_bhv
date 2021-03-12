@@ -32,8 +32,6 @@ class Term extends BaseModel
     public function getFullTextTermENAttribute(){
 
         $q = [  
-                'group' => explode(".", $this->name)[0],
-                'num'   => explode(".", $this->name)[1],
                 'name' => $this->name,
                 'content' => '<p style="text-align: justify;"><span style="font-family: arial, helvetica, sans-serif;">' .$this->name ." ". preg_replace('/(<p>)/', "", $this->description_en.'</span>', 1)
             ];
