@@ -361,9 +361,9 @@ function payMethod($HBS_CL_CLAIM, $lang = null){
     //CL_PAYMENT_METHOD_TT
     switch ($HBS_CL_CLAIM->payMethod) {
         case 'CL_PAYMENT_METHOD_TT':
-            
+            $account_no_lang = $lang == "en" ? "Account No.: " : "Số tài khoản: ";
             $name_reciever = $HBS_CL_CLAIM->member->cl_pay_acct_name;
-            $info_reciever = 'Số tài khoản: '.$HBS_CL_CLAIM->member->cl_pay_acct_no;
+            $info_reciever = $account_no_lang.$HBS_CL_CLAIM->member->cl_pay_acct_no;
             //$banking = $HBS_CL_CLAIM->member->bank_name.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $banking = $HBS_CL_CLAIM->member->BankNameChange.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $notify = $lang == "en" ? "Pacific Cross Vietnam will settle the payment after 05 working days from the date of issuing this notification.": "Pacific Cross Vietnam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.";
@@ -371,8 +371,12 @@ function payMethod($HBS_CL_CLAIM, $lang = null){
             break;
         case 'CL_PAYMENT_METHOD_CH':
             $name_reciever = $HBS_CL_CLAIM->member->cash_beneficiary_name;
-            $info_reciever = "CMND/CCCD: " .$HBS_CL_CLAIM->member->cash_id_passport_no.', ngày cấp:  
-            '.Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').', nơi cấp: '. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
+            $passport_lang = $lang == "en" ? "ID CARD / PASSPORT: " : "CMND/CCCD: ";
+            $date_supply_lang = $lang == "en" ? "date of supply: " : "ngày cấp: ";
+            $providers_lang = $lang == "en" ? "provider: " : 'nơi cấp:';
+
+            $info_reciever = $passport_lang .$HBS_CL_CLAIM->member->cash_id_passport_no.', '.$date_supply_lang  
+            .Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').',  '.$providers_lang. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
             //$banking = $HBS_CL_CLAIM->member->cash_bank_name.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $banking = $HBS_CL_CLAIM->member->CashBankNameChange.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $notify = $lang == "en" ? "Pacific Cross Vietnam will settle the payment after 05 working days from the date of issuing this notification.": "Pacific Cross Vietnam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.";
