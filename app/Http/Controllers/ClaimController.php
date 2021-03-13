@@ -181,8 +181,7 @@ class ClaimController extends Controller
     {
         $claim_type = $request->claim_type;
         //validate
-        
-        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id', (int)$request->barcode)->where('field_id', 14)->get();
+        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id', $request->barcode)->where('field_id', 14)->get();
         if($issue->count() != 1){
             $request->session()->flash('errorStatus', 'Phải tồn tại duy nhất 1 Common ID trên Health Etalk ');
             return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
@@ -1338,6 +1337,7 @@ class ClaimController extends Controller
         $police = $HBS_CL_CLAIM->Police;
         $policyHolder = $HBS_CL_CLAIM->policyHolder;
         $payMethod = payMethod($HBS_CL_CLAIM);
+        $payMethod_en = payMethod($HBS_CL_CLAIM,"en");
         $barcode = '<barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />'
         .'<p style="text-align: right;">'.$claim->barcode.'</p>';
         $CSRRemark_TermRemark = CSRRemark_TermRemark($claim);
@@ -1433,7 +1433,7 @@ class ClaimController extends Controller
         $content = str_replace('[[$ltrDate]]', getVNLetterDate(), $content);
         $content = str_replace('[[$nowDay]]', Carbon::now()->format('d/m/Y'), $content);
         $content = str_replace('[[$pstAmt]]', formatPrice($HBS_CL_CLAIM->sumPresAmt), $content);
-        $content = str_replace('[[$payMethod]]', $payMethod, $content);
+        
         $content = str_replace('[[$deniedAmt]]', formatPrice($deniedAmt) , $content);
         $content = str_replace('[[$claimNo]]', $claim->code_claim_show , $content);
         $content = str_replace('[[$memRefNo]]', $HBS_CL_CLAIM->member->memb_ref_no , $content);
@@ -1453,7 +1453,7 @@ class ClaimController extends Controller
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Diễn giãi:</span></p>" .
             implode('', $CSRRemark) .
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Quý khách vui lòng tham khảo (các) điều khoản sau:</span></p>" .
-            implode('', array_unique($TermRemark));
+            implode('', $TermRemark);
 
             $htm_infoReject_en = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
             Rejection amount:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VND</strong>" .
@@ -1461,10 +1461,18 @@ class ClaimController extends Controller
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Description:</span></p>" .
             implode('', $CSRRemark_en) .
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Please kindly refer to the below condition(s):</span></p>" .
-            implode('', array_unique($TermRemark_en));
+            implode('', $TermRemark_en);
         }
         $content = str_replace('[[$infoReject]]', $htm_infoReject , $content);
         $content = str_replace('[[$infoReject_en]]', $htm_infoReject_en , $content);
+        if((int)$sumAppAmt > 0){
+            $content = str_replace('[[$payMethod]]', $payMethod, $content);
+            $content = str_replace('[[$payMethod_en]]', $payMethod_en, $content);
+        }else{
+            $content = str_replace('[[$payMethod]]', "", $content);
+            $content = str_replace('[[$payMethod_en]]', "", $content);
+        }
+        
 
         $content = str_replace('[[$invoicePatient]]', implode(" ",$HBS_CL_CLAIM->HBS_CL_LINE->pluck('inv_no')->toArray()) , $content);
         if($CSRRemark){

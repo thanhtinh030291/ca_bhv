@@ -353,51 +353,57 @@ function getHourStartEnd($text){
 
 // print leter payment method
 
-function payMethod($HBS_CL_CLAIM){
+function payMethod($HBS_CL_CLAIM, $lang = null){
     $name_reciever = "";
     $info_reciever = "";
     $banking = "";
     $notify = "";
-   
+    //CL_PAYMENT_METHOD_TT
     switch ($HBS_CL_CLAIM->payMethod) {
-        case 'CL_PAY_METHOD_TT':
+        case 'CL_PAYMENT_METHOD_TT':
             
             $name_reciever = $HBS_CL_CLAIM->member->cl_pay_acct_name;
             $info_reciever = 'Số tài khoản: '.$HBS_CL_CLAIM->member->cl_pay_acct_no;
             //$banking = $HBS_CL_CLAIM->member->bank_name.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $banking = $HBS_CL_CLAIM->member->BankNameChange.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
-            $notify = "Quý khách vui lòng kiểm tra tài khoản nhận tiền sau 3-5 ngày làm việc kể từ ngày chấp nhận thanh toán.";
+            $notify = $lang == "en" ? "Pacific Cross Vietnam will settle the payment after 05 working days from the date of issuing this notification.": "Pacific Cross Vietnam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.";
             $not_show_table = false;
             break;
-        case 'CL_PAY_METHOD_CA':
+        case 'CL_PAYMENT_METHOD_CH':
             $name_reciever = $HBS_CL_CLAIM->member->cash_beneficiary_name;
-            $info_reciever = "CMND/Căn cước công dân: " .$HBS_CL_CLAIM->member->cash_id_passport_no.', ngày cấp:  
+            $info_reciever = "CMND/CCCD: " .$HBS_CL_CLAIM->member->cash_id_passport_no.', ngày cấp:  
             '.Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').', nơi cấp: '. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
             //$banking = $HBS_CL_CLAIM->member->cash_bank_name.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $banking = $HBS_CL_CLAIM->member->CashBankNameChange.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
-            $notify = "Quý khách vui lòng mang theo CMND đến Ngân hàng nhận tiền sau 3-5 ngày làm việc kể từ ngày chấp nhận thanh toán";
+            $notify = $lang == "en" ? "Pacific Cross Vietnam will settle the payment after 05 working days from the date of issuing this notification.": "Pacific Cross Vietnam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.";
             $not_show_table = false;
             break;
-        case 'CL_PAY_METHOD_CQ':
+        case 'CL_PAYMENT_METHOD_CQ':
             $name_reciever = $HBS_CL_CLAIM->member->cash_beneficiary_name;
             $info_reciever = " ";
             $banking = "";
-            $notify ="Nhận tiền mặt tại Pacific Cross Vietnam, Lầu 16, Tháp B, Tòa nhà Royal Centre, 235 Nguyễn Văn Cừ, Phường Nguyễn Cư Trinh, Quận 1, TP. HCM (Quý khách vui lòng mang theo CMND đến Văn phòng nhận tiền từ Thứ Hai đến Thứ Sáu hàng tuần sau 1 ngày làm việc kể từ ngày chấp nhận thanh toán)";
+            $notify = $lang == "en" ? "Cash pick up at Pacific Cross Vietnam, 16th Floor, Tower B, Royal Center Building, 235 Nguyen Van Cu, Nguyen Cu Trinh Ward, District 1, HCMC. HCM (Please bring your ID card to the receiving office from Monday to Friday every week after 1 working day from the date of accepting payment)":
+                "Nhận tiền mặt tại Pacific Cross Vietnam, Lầu 16, Tháp B, Tòa nhà Royal Centre, 235 Nguyễn Văn Cừ, Phường Nguyễn Cư Trinh, Quận 1, TP. HCM (Quý khách vui lòng mang theo CMND đến Văn phòng nhận tiền từ Thứ Hai đến Thứ Sáu hàng tuần sau 1 ngày làm việc kể từ ngày chấp nhận thanh toán)";
             $not_show_table = false;
             break;
         default:
             $name_reciever = " ";
             $info_reciever = " ";
             $banking = "";
-            $notify = " Đóng phí bảo hiểm cho hợp đồng số ". $HBS_CL_CLAIM->Police->pocy_ref_no  ;
+            $notify = $lang == "en" ? " Pay the premium for contract ": (" Đóng phí bảo hiểm cho hợp đồng số ". $HBS_CL_CLAIM->Police->pocy_ref_no) ;
             $not_show_table = true;
             break;
     }
-    $payMethod =    '<table style=" border: 1px solid black; border-collapse: collapse;">
+    $pay_lang = $lang == "en" ? 'Pacific Cross VN will pay the above amount in the following form:' : 'Pacific Cross VN sẽ thanh toán số tiền trên theo hình thức sau:';
+    $beneficiary_name = $lang == "en" ? 'Beneficiary name: ' : 'Tên người thụ hưởng: ';
+    $info_bank = $lang == "en" ? 'Name and Address of the Bank: ' : 'Tên và địa chỉ Ngân hàng: ';
+
+    $payMethod =    '<p><span style="font-family: arial, helvetica, sans-serif; font-size: 11pt;">'.$pay_lang.'</span></p>
+                    <table style=" border: 1px solid black; border-collapse: collapse;">
                         <tbody>
                         <tr>
                             <td style="border: 1px solid black; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 11pt">
-                                <p>Tên người thụ hưởng: '.$name_reciever.'</p>
+                                <p>'.$beneficiary_name.$name_reciever.'</p>
                             </td>
                             <td style="border: 1px solid black; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 11pt">
                                 <p>'.$info_reciever.'</p>
@@ -405,7 +411,7 @@ function payMethod($HBS_CL_CLAIM){
                         </tr>
                         <tr>
                             <td style="border: 1px solid black; font-family: arial, helvetica, sans-serif ; font-size: 11pt" colspan="2">
-                                <p>Tên và địa chỉ Ngân hàng: '.$banking.'</p>
+                                <p>'.$info_bank.$banking.'</p>
                             </td>
                         </tr>
                         <tr>
@@ -416,7 +422,7 @@ function payMethod($HBS_CL_CLAIM){
                     </tbody>
                     </table>';
     if($not_show_table){
-        $payMethod = '<span style=" font-family: arial, helvetica, sans-serif ; font-size: 11pt;"><strong>'.$notify.'</strong></span>';
+        $payMethod = '<span style=" font-family: arial, helvetica, sans-serif ; font-size: 11pt;">'.$pay_lang.'<strong>'.$notify.'</strong></span>';
     }
     
     return $payMethod;
@@ -426,43 +432,29 @@ function payMethod($HBS_CL_CLAIM){
 
 function IOPDiag($HBS_CL_CLAIM, $claim_id , $lang = null){
     $IOPDiag = [];
-        $ClaimWordSheet = App\ClaimWordSheet::where('claim_id',$claim_id)->first();
         foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $key => $value) {
-            switch ($value->PD_BEN_HEAD->scma_oid_ben_type) {
-                case 'BENEFIT_TYPE_OP':
-                    $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                    $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                    if($lang == null || $lang == 'vn'){
-                        $IOPDiag[] = "Ngày điều trị: $from_date <br>".
-                        "Chẩn đoán: " . ($value->RT_DIAGNOSIS->diag_desc_vn == null ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn)." <br>".
-                        'Nơi điều trị: '.$value->prov_name." <br>";
-                    }else{
-                        $IOPDiag[] = "Treatment period: $from_date <br>".
-                        "Diagnosis: " . $value->RT_DIAGNOSIS->diag_desc ." <br>".
-                        'Place of treatment: '.$value->prov_name." <br>";
-                    }
-                    
-                    break;
-                case 'BENEFIT_TYPE_IP':
-                    $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                    $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                    if($lang == null || $lang == 'vn'){
-                        $IOPDiag[] = "Ngày điều trị: $from_date - $to_date<br>".
-                        "Chẩn đoán: " . ($value->RT_DIAGNOSIS->diag_desc_vn == null ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn) ." <br>".
-                        'Nơi điều trị: '.$value->prov_name." <br>";
-                    }else{
-                        $IOPDiag[] = "Treatment period: $from_date - $to_date <br>".
-                        "Diagnosis: " . $value->RT_DIAGNOSIS->diag_desc ." <br>".
-                        'Place of treatment: '.$value->prov_name." <br>";
-                    }
-                    break;
-                default:
-                    break;
-            }
+            $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
+            $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
+            $IOPDiag[$key]['date'] = "$from_date - $to_date";
+            $IOPDiag[$key]['diagnosis'] = ($value->RT_DIAGNOSIS->diag_desc_vn == null || $lang = 'en' )  ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn ;
+            $IOPDiag[$key]['place'] = $value->prov_name;
         }
-    $IOPDiag = implode('<br>', array_unique($IOPDiag));
+    $IOPDiag = collect( $IOPDiag)->groupBy('place');
+    foreach ($IOPDiag as $key => $value) {
+        if($lang == null || $lang == 'vn'){
+            $IOPDiag_f[] = "Ngày điều trị: ".$value->unique('date')->implode('date' , "; " )."<br>".
+            "Chẩn đoán: " . $value->unique('diagnosis')->implode('diagnosis' , ", " ) ." <br>".
+            'Nơi điều trị: '.$value[0]['place']." <br>";
+        }else{
+            $IOPDiag_f[] = "Treatment period: ".$value->unique('date')->implode('date' , "; " )."<br>".
+            "Diagnosis: " . $value->unique('diagnosis')->implode('diagnosis' , ", " ) ." <br>".
+            'Place of treatment: '.$value[0]['place']." <br>";
+        }
+    }
+    $IOPDiag = implode('<br>',  $IOPDiag_f);
     return $IOPDiag;
 }
+
 
 function IOPDiagWookSheet($HBS_CL_CLAIM){
     $IOPDiag = [];
@@ -564,18 +556,9 @@ function CSRRemark_TermRemark($claim ,$lang = null){
             $CSRRemark[] = Str::replaceArray('$arrParameter', $arr_str, $template_new);
         }
     }
-    $TermRemark = collect($TermRemark)->sortBy('group')->groupBy('group');
-    $show_term = [];
-    foreach ($TermRemark as $key => $value) {
-        
-        $collect_value = collect($value)->sortBy('num');
-        foreach ($collect_value as $key_c => $value_c) {
-            $show_term[] = $value_c['content'];
-        }
-    }
+    $TermRemark = collect($TermRemark)->unique()->toArray();
     
-    
-    return [ 'CSRRemark' => $CSRRemark , 'TermRemark' => $show_term , 'itemsReject' => $itemsReject , 'sumAmountReject' => $sumAmountReject];
+    return [ 'CSRRemark' => $CSRRemark , 'TermRemark' => $TermRemark , 'itemsReject' => $itemsReject , 'sumAmountReject' => $sumAmountReject];
     
 }
 

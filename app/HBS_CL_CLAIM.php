@@ -128,7 +128,7 @@ class HBS_CL_CLAIM extends  BaseModelDB2
 
 
     public function getPayMethodAttribute(){
-        return $this->member->scma_oid_cl_pay_method;
+        return $this->firstLine->scma_oid_cl_payment_method;
     }
 
     public function getPolicyHolderAttribute(){
