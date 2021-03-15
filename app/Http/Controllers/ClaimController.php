@@ -1510,7 +1510,7 @@ class ClaimController extends Controller
                 <table style=" border: 1px solid black; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt" rowspan="2">'.$col_benefit.'</th>
+                            <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$col_benefit.'</th>
                             <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$col_submitted_amount.'</th>
                             <th style="border: 1px solid black ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">'.$col_paid_amount.'</th>
                         </tr>
