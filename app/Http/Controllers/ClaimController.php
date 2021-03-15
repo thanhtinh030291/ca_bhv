@@ -1916,19 +1916,19 @@ class ClaimController extends Controller
         }
 
         //save cache letter
-        // $file_name_letter =  md5(Str::random(11).time());
-        // $mpdf_lt = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
-        // $mpdf_lt->WriteHTML( $data['content_letter']);
-        // $pdf = $mpdf_lt->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN);
-        // Storage::put('public/cache/' . $file_name_letter, $pdf);
-        // $path_file[] = storage_path("app/public/cache/$file_name_letter") ;
+        $file_name_letter =  md5(Str::random(11).time());
+        $mpdf_lt = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+        $mpdf_lt->WriteHTML( $data['content_letter']);
+        $pdf = $mpdf_lt->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN);
+        Storage::put('public/cache/' . $file_name_letter, $pdf);
+        $path_file[] = storage_path("app/public/cache/$file_name_letter") ;
 
-        // $count_page = $mpdf->SetSourceFile(storage_path("app/public/cache/$file_name_letter"));
-        // for ($i = 1; $i <= $count_page; $i++) {
-        //     $mpdf->AddPage();
-        //     $tplId = $mpdf->ImportPage($i);
-        //     $mpdf->UseTemplate($tplId);
-        // }
+        $count_page = $mpdf->SetSourceFile(storage_path("app/public/cache/$file_name_letter"));
+        for ($i = 1; $i <= $count_page; $i++) {
+            $mpdf->AddPage();
+            $tplId = $mpdf->ImportPage($i);
+            $mpdf->UseTemplate($tplId);
+        }
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
         //$namefile = Str::slug("{$HBS_CL_CLAIM->Police->pocy_ref_no}_{$HBS_CL_CLAIM->memberNameCap}_CSR_{$claim->code_claim_show}", '-').".pdf";
         $namefile = $HBS_CL_CLAIM->Police->pocy_no."-".strtoupper(Str::slug($HBS_CL_CLAIM->memberNameCap," "))."-CSR-".$claim->code_claim_show.".pdf";
