@@ -830,7 +830,7 @@ class AjaxCommonController extends Controller
         $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
         $approve_amt = $HBS_CL_CLAIM->sumAppAmt;
         $present_amt = $HBS_CL_CLAIM->sumPresAmt;
-        $payment_method = str_replace("CL_PAY_METHOD_","",$HBS_CL_CLAIM->payMethod);
+        $payment_method = str_replace("CL_PAYMENT_METHOD_","",$HBS_CL_CLAIM->payMethod);
         $payment_method = $payment_method == 'CA' ? "CH" : $payment_method;
         $pocy_no = $HBS_CL_CLAIM->Police->pocy_no;
         $memb_no = $HBS_CL_CLAIM->member->mbr_no;
