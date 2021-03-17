@@ -1450,7 +1450,7 @@ class ClaimController extends Controller
             $htm_infoReject = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
             Số tiền không được bồi thường:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VNĐ</strong>" .
             "</span></p>" . 
-            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Diễn giãi:</span></p>" .
+            "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Diễn giải:</span></p>" .
             implode('', $CSRRemark) .
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Quý khách vui lòng tham khảo (các) điều khoản sau:</span></p>" .
             implode('', $TermRemark);
