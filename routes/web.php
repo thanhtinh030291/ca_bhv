@@ -153,6 +153,8 @@ Route::group(['prefix' => 'admin'], function () {
         //report for admin claim
         Route::resource('reportGop', 'ReportGopController');
         
+        //report FN payment
+        Route::resource('ReportPaymentFN', 'ReportPaymentFNController');
     });
 
 });

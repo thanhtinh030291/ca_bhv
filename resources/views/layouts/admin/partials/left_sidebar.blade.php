@@ -25,10 +25,15 @@
                         </li>
                         @endhasanyrole
                         @hasanyrole('Header|ManagerGOP|Admin|AdminClaim')
+                        <li class="{{ setActive('admin/ReportPaymentFN') }}"> 
+                            <a class="{{ setActive('admin/ReportPaymentFN') }}"
+                            href="{{ url('admin/ReportPaymentFN') }}"><span> Report Pay Of Finance </span></a>
+                        </li>
                         <li class="{{ setActive('admin/reportAdmins') }}"> 
                             <a class="{{ setActive('admin/reportAdmins') }}"
                             href="{{ url('admin/reportAdmins') }}"><span> Report for Admin Claim</span></a>
                         </li>
+                        
                         @endhasanyrole
                         @hasanyrole('Header|ManagerGOP|Admin|ClaimGOP')
                         <li class="{{ setActive('admin/reportGop') }}"> 
