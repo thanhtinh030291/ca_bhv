@@ -1,5 +1,5 @@
 @extends('layouts.admin.master')
-@section('title', 'Report Admin')
+@section('title', 'Report Pay Of Finance')
 @section('stylesheets')
     <link href="{{ asset('css/fileinput.css') }}" media="all" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/jquery-ui.min.css') }}">
@@ -8,10 +8,10 @@
 @endsection
 @section('content')
     @include('layouts.admin.breadcrumb_index', [
-        'title'       => 'Report Admin',
+        'title'       => 'Report Pay Of Finance',
         'parent_url'  =>  "",
-        'parent_name' => 'Report Admins',
-        'page_name'   => 'Report Admin',
+        'parent_name' => 'Report Pay Of Finance',
+        'page_name'   => 'Report Pay Of Finance',
     ])
     <div class="row">
         <div class="col-md-12">

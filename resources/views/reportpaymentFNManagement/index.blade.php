@@ -5,8 +5,8 @@
 @endsection
 @section('content')
     @include('layouts.admin.breadcrumb_index', [
-        'title'       => 'Report Upload M-Files',
-        'page_name'   => 'Report Upload M-Files',
+        'title'       => 'Report Pay Of Finance',
+        'page_name'   => 'Report Pay Of Finance',
     ])
     <div class="row">
         <div class="col-md-12">
