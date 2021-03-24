@@ -920,8 +920,8 @@ class AjaxCommonController extends Controller
             'tf_amt' => $request->tf_amt,
             'deduct_amt' => $request->deduct_amt,
             'payment_method' => $request->payment_method,
-            //'mantis_id' => $request->mantis_id,
-            'mantis_id' => "",
+            'mantis_id' => $request->mantis_id,
+            //'mantis_id' => "",
             'username'    => 'claimassistant'
         ];
         
