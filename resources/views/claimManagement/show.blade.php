@@ -99,8 +99,7 @@ $totalAmount = 0;
                                         {!! Form::button('Delete pages', ['data-toggle' => "modal" ,  
                                                 'data-target' => "#deletePagesModal",
                                                 'type' => 'button', 
-                                                'class' => ' btn text-danger' , 
-                                                'onclick' => 'comfirmPayment(this);',
+                                                'class' => ' btn text-danger' 
                                                 ]) !!}
                                     </div>
                                     <!-- End file image -->
