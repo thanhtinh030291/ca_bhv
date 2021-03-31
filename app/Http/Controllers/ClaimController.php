@@ -180,12 +180,6 @@ class ClaimController extends Controller
     public function store(formClaimRequest $request)
     {
         $claim_type = $request->claim_type;
-        //validate
-        $issue = MANTIS_CUSTOM_FIELD_STRING::where('bug_id', $request->barcode)->where('field_id', 14)->get();
-        if($issue->count() != 1){
-            $request->session()->flash('errorStatus', 'Phải tồn tại duy nhất 1 Common ID trên Health Etalk ');
-            return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
-        }
         
         //end valid
         if ($request->_url_file_sorted) {
@@ -204,7 +198,7 @@ class ClaimController extends Controller
             $dataNew += ['url_file'  =>  $imageName];
         }
         $dataNew += [
-            'mantis_id' => $issue->first()->bug_id,
+            'mantis_id' => $request->barcode,
             'created_user' =>  $userId,
             'updated_user' =>  $userId,
         ];
