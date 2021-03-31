@@ -2017,11 +2017,7 @@ class ClaimController extends Controller
     public function sendPayment(Request $request, $id){
         $claim = Claim::findOrFail($id);
         $HBS_CL_CLAIM = HBS_CL_CLAIM::HBSData()->findOrFail($claim->code_claim);
-        $count_policy =  $HBS_CL_CLAIM->HBS_CL_LINE->pluck("MR_POLICY_PLAN.MR_POLICY.pocy_ref_no")->unique()->count();
-        if($count_policy != 1){
-            $request->session()->flash('errorStatus', 'Claim chỉ được phép tồn tại 1 policy plan ');
-            return redirect('/admin/claim/'.$id)->withInput();
-        }
+        
         $rp = AjaxCommonController::sendPayment($request,$id);
         switch (data_get($rp,'code')) {
             case '00':
