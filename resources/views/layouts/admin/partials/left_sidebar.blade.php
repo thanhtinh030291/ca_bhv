@@ -46,16 +46,17 @@
                             <a class="{{ setActive('admin/reason_reject') }}"
                             href="{{ url('admin/reason_reject') }}"><span> {{ __('message.reason_reject')}}</span></a>
                         </li>
+                        <li class="{{ setActive('admin/term') }}"> 
+                            <a class="{{ setActive('admin/term') }}"
+                            href="{{ url('admin/term') }}"><span> {{ __('message.term')}}</span></a>
+                        </li>
                         @endhasanyrole
                         @hasanyrole('Header|Manager|Admin|ManagerGOP')
                         <li class="{{ setActive('admin/product') }}"> 
                             <a class="{{ setActive('admin/product') }}"
                             href="{{ url('admin/product') }}"><span> {{ __('message.product')}}</span></a>
                         </li>
-                        <li class="{{ setActive('admin/term') }}"> 
-                            <a class="{{ setActive('admin/term') }}"
-                            href="{{ url('admin/term') }}"><span> {{ __('message.term')}}</span></a>
-                        </li>
+                        
                         <li class="{{ setActive('admin/letter_template') }}"> 
                             <a class="{{ setActive('admin/letter_template') }}"
                             href="{{ url('admin/letter_template') }}"><span> {{ __('message.letter_template')}}</span></a>
