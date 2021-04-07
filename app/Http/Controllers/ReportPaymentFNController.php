@@ -11,6 +11,7 @@ use Flash;
 use Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use App\HBS_CL_CLAIM;
 
 class ReportPaymentFNController extends Controller
 {
@@ -57,6 +58,20 @@ class ReportPaymentFNController extends Controller
     public function show($datereport)
     {
         $CPS_PAYMENTS = CPS_PAYMENTS::whereDate('TF_DATE', $datereport)->where('TF_DATE',"!=",NULL)->where('TF_STATUS_ID',200)->get();
+        $array_clno = $CPS_PAYMENTS->pluck('CL_NO')->toArray();
+        $HBS_CL_CLAIM = HBS_CL_CLAIM::whereIn('cl_no',$array_clno)->with(['HBS_CL_LINE'])->get()->pluck('HBS_CL_LINE','cl_no');
+        
+        foreach ($CPS_PAYMENTS as $key => $CPS_PAYMENT) {
+            $hbs = $HBS_CL_CLAIM[$CPS_PAYMENT->CL_NO]->map(function ($c) {
+                $q=  collect($c)->only(['incur_date_from', 'incur_date_to']);
+                if($q['incur_date_from'] == $q['incur_date_to']){
+                    return str_replace(" 00:00:00", "",$q['incur_date_from']) ;
+                }else{
+                    return str_replace(" 00:00:00", "",$q['incur_date_from']) .' to ' . str_replace(" 00:00:00", "",$q['incur_date_to']);
+                }
+            })->unique()->toArray();
+            $CPS_PAYMENTS[$key]['incur'] = implode(" ; ",$hbs);
+        }
         $admin_list = User::getListIncharge();
         return view('reportpaymentFNManagement.show', compact('CPS_PAYMENTS','admin_list'));
     }
