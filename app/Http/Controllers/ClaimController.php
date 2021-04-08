@@ -1450,7 +1450,7 @@ class ClaimController extends Controller
             implode('', $TermRemark);
 
             $htm_infoReject_en = "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>
-            Rejection amount:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VND</strong>" .
+            Rejected amount:  <strong style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>".formatPrice($deniedAmt). " VND</strong>" .
             "</span></p>" . 
             "<p><span style='font-family: arial, helvetica, sans-serif; font-size: 11pt;'>Description:</span></p>" .
             implode('', $CSRRemark_en) .
