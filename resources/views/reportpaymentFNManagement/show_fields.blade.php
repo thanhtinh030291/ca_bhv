@@ -5,6 +5,7 @@
                 <th scope="col" class="noVis">STT</th>
                 <th scope="col" class="noVis">Claim Type</th>
                 <th scope="col" class="noVis">CL No</th>
+                <th scope="col" class="noVis">MEMB NAME</th>
                 <th scope="col" class="noVis">INV NO</th>
                 <th scope="col" class="noVis">INCUR</th>
                 <th scope="col" class="noVis">TF AMT</th>
@@ -17,6 +18,7 @@
                 <td>{!! $key + 1 !!}</td>
                 <td>{!! $item->CL_TYPE !!}</td>
                 <td>{!! $item->CL_NO !!}</td>
+                <td>{!! $item->MEMB_NAME !!}</td>
                 <td>{!! $item->INV_NO !!}</td>
                 <td>{!! $item->incur !!}</td>
                 <td>{!! formatPrice($item->TF_AMT) !!}</td>
