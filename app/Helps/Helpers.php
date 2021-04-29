@@ -386,8 +386,19 @@ function payMethod($HBS_CL_CLAIM, $lang = null){
             $name_reciever = $HBS_CL_CLAIM->member->cash_beneficiary_name;
             $info_reciever = " ";
             $banking = "";
-            $notify = $lang == "en" ? "Cash pick up at Pacific Cross Vietnam, 16th Floor, Tower B, Royal Center Building, 235 Nguyen Van Cu, Nguyen Cu Trinh Ward, District 1, HCMC. HCM (Please bring your ID card to the receiving office from Monday to Friday every week after 1 working day from the date of accepting payment)":
-                "Nhận tiền mặt tại Pacific Cross Vietnam, Lầu 16, Tháp B, Tòa nhà Royal Centre, 235 Nguyễn Văn Cừ, Phường Nguyễn Cư Trinh, Quận 1, TP. HCM (Quý khách vui lòng mang theo CMND đến Văn phòng nhận tiền từ Thứ Hai đến Thứ Sáu hàng tuần sau 1 ngày làm việc kể từ ngày chấp nhận thanh toán)";
+            $notify = $lang == "en" ? 
+                "<p>Cash pick up at Pacific Cross Vietnam</p>
+                <ul>
+                    <li>16th Floor, Tower B, Royal Center Building, 235 Nguyen Van Cu, Nguyen Cu Trinh Ward, District 1, HCMC. HCM <br />Tel: (+84 28) 3821 9908</li>
+                    <li>19th Floor, VCCI Tower, 9 Dao Duy Anh St., Dong Da Dist., Hanoi, Vietnam <br />Tel: (+84 24) 7308 6699</li>
+                </ul>
+                <p>(Please bring your ID card to the receiving office from Monday to Friday every week after 1 working day from the date of accepting payment)</p>":
+                "<p>Nhận tiền mặt tại Pacific Cross Vietnam</p>
+                <ul>
+                    <li>Lầu 16, Tháp B, Tòa nhà Royal Centre, 235 Nguyễn Văn Cừ, Phường Nguyễn Cư Trinh, Quận 1, TP. HCM  <br /> ĐT: (+84 28) 3821 9908</li>
+                    <li>Lầu 19, Toà Nhà VCCI Tower, 9 Đào Duy Anh, Q. Đống Đa, Hà Nội <br /> ĐT: (+84 24) 7308 6699</li>
+                </ul>
+                <p>(Quý khách vui lòng mang theo CMND đến Văn phòng nhận tiền từ Thứ Hai đến Thứ Sáu hàng tuần sau 1 ngày làm việc kể từ ngày chấp nhận thanh toán)</p>";
             $not_show_table = false;
             break;
         default:
