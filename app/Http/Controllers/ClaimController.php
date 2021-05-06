@@ -1422,12 +1422,11 @@ class ClaimController extends Controller
         $content = str_replace('[[$IOPDiag]]', IOPDiag($HBS_CL_CLAIM, $claim_id) , $content);
         $content = str_replace('[[$IOPDiag_en]]', IOPDiag($HBS_CL_CLAIM, $claim_id, 'en') , $content);
         $content = str_replace('[[$PRefNo]]', $police->pocy_ref_no, $content);
-        $content = str_replace('[[$PhName]]', $policyHolder->poho_name_1, $content);
+        $content = str_replace('[[$PhName]]', $policyHolder->poho_name_1 ." ". $policyHolder->poho_name_2, $content);
         $content = str_replace('[[$memberNameCap]]', $HBS_CL_CLAIM->memberNameCap, $content);
         $content = str_replace('[[$ltrDate]]', getVNLetterDate(), $content);
         $content = str_replace('[[$nowDay]]', Carbon::now()->format('d/m/Y'), $content);
         $content = str_replace('[[$pstAmt]]', formatPrice($HBS_CL_CLAIM->sumPresAmt), $content);
-        
         $content = str_replace('[[$deniedAmt]]', formatPrice($deniedAmt) , $content);
         $content = str_replace('[[$claimNo]]', $claim->code_claim_show , $content);
         $content = str_replace('[[$memRefNo]]', $HBS_CL_CLAIM->member->memb_ref_no , $content);
