@@ -71,6 +71,8 @@ class ReportPaymentFNController extends Controller
                 }
             })->unique()->toArray();
             $CPS_PAYMENTS[$key]['incur'] = implode(" ; ",$hbs);
+            $CPS_PAYMENTS[$key]['diag_desc'] = $HBS_CL_CLAIM->FirstLine->RT_DIAGNOSIS->diag_desc;
+            
         }
         $admin_list = User::getListIncharge();
         return view('reportpaymentFNManagement.show', compact('CPS_PAYMENTS','admin_list'));

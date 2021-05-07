@@ -8,6 +8,7 @@
                 <th scope="col" class="noVis">MEMB NAME</th>
                 <th scope="col" class="noVis">INV NO</th>
                 <th scope="col" class="noVis">INCUR</th>
+                <th scope="col" class="noVis">DIAG DESC </th>
                 <th scope="col" class="noVis">PAYEE</th>
                 <th scope="col" class="noVis">POCY NO</th>
                 <th scope="col" class="noVis">TF AMT</th>
@@ -23,6 +24,7 @@
                 <td>{!! $item->MEMB_NAME !!}</td>
                 <td>{!! $item->INV_NO !!}</td>
                 <td>{!! $item->incur !!}</td>
+                <td>{!! $item->diag_desc !!}</td>
                 <td>{!! $item->PAYEE !!}</td>
                 <td>{!! substr($item->POCY_NO,0,6) . "-" . substr($item->POCY_NO,6,3) . "-" . substr($item->POCY_NO,-5)!!}</td>
                 <td>{!! $item->TF_AMT !!}</td>
