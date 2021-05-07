@@ -11,6 +11,7 @@
                 <th scope="col" class="noVis">DIAG DESC </th>
                 <th scope="col" class="noVis">PAYEE</th>
                 <th scope="col" class="noVis">POCY NO</th>
+                <th scope="col" class="noVis">POCYHODER Name</th>
                 <th scope="col" class="noVis">TF AMT</th>
                 <th scope="col" class="noVis">TF DATE</th>
             </tr>
@@ -27,6 +28,7 @@
                 <td>{!! $item->diag_desc !!}</td>
                 <td>{!! $item->PAYEE !!}</td>
                 <td>{!! substr($item->POCY_NO,0,6) . "-" . substr($item->POCY_NO,6,3) . "-" . substr($item->POCY_NO,-5)!!}</td>
+                <td>{!! $item->ph_name !!}</td>
                 <td>{!! $item->TF_AMT !!}</td>
                 <td>{!! $item->TF_DATE !!}</td>
                 

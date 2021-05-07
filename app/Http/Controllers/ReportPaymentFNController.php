@@ -59,10 +59,12 @@ class ReportPaymentFNController extends Controller
     {
         $CPS_PAYMENTS = CPS_PAYMENTS::whereDate('TF_DATE', $datereport)->where('TF_DATE',"!=",NULL)->where('TF_STATUS_ID',200)->get();
         $array_clno = $CPS_PAYMENTS->pluck('CL_NO')->toArray();
-        $HBS_CL_CLAIM = HBS_CL_CLAIM::whereIn('cl_no',$array_clno)->with(['HBS_CL_LINE'])->get()->pluck('HBS_CL_LINE','cl_no');
+        $HBS_CL_CLAIM = HBS_CL_CLAIM::whereIn('cl_no',$array_clno)->with(['HBS_CL_LINE'])->get();
         
         foreach ($CPS_PAYMENTS as $key => $CPS_PAYMENT) {
-            $hbs = $HBS_CL_CLAIM[$CPS_PAYMENT->CL_NO]->map(function ($c) {
+            
+            $cl_line = $HBS_CL_CLAIM->where('cl_no',$CPS_PAYMENT->CL_NO)->first()->HBS_CL_LINE;
+            $hbs = $cl_line->map(function ($c) {
                 $q=  collect($c)->only(['incur_date_from', 'incur_date_to']);
                 if($q['incur_date_from'] == $q['incur_date_to']){
                     return str_replace(" 00:00:00", "",$q['incur_date_from']) ;
@@ -70,9 +72,13 @@ class ReportPaymentFNController extends Controller
                     return str_replace(" 00:00:00", "",$q['incur_date_from']) .' to ' . str_replace(" 00:00:00", "",$q['incur_date_to']);
                 }
             })->unique()->toArray();
+            $hbs_diag = $cl_line->map(function ($c) {
+                return $c->RT_DIAGNOSIS->diag_desc;
+            })->unique()->toArray();
             $CPS_PAYMENTS[$key]['incur'] = implode(" ; ",$hbs);
-            $CPS_PAYMENTS[$key]['diag_desc'] = $HBS_CL_CLAIM[$CPS_PAYMENT->CL_NO][0]->RT_DIAGNOSIS->diag_desc;
-            
+            $CPS_PAYMENTS[$key]['diag_desc'] = implode(" ; ",$hbs_diag);
+            $policyHolder = $HBS_CL_CLAIM->where('cl_no',$CPS_PAYMENT->CL_NO)->first()->policyHolder;
+            $CPS_PAYMENTS[$key]['ph_name'] = $policyHolder->poho_name_1 ." ". $policyHolder->poho_name_2;
         }
         $admin_list = User::getListIncharge();
         return view('reportpaymentFNManagement.show', compact('CPS_PAYMENTS','admin_list'));
