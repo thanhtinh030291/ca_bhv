@@ -116,5 +116,20 @@ class SettingController extends Controller
         $request->session()->flash('status', "setting update success"); 
         return redirect('/admin/setting');
     }
-
+    
+    public function updateProject(Request $request){
+        $id_project_mb = DB::connection('mysql_mantic')->table('mantis_project_table')->where('name','CLM - Mobile')->first()->id;
+        $claim_chunk = Claim::where('claim_type','M')->whereNull('project')->pluck('barcode')->chunk(100);
+        
+        foreach ($claim_chunk as $key => $claims) {
+            $MANTIS_BUG = \App\MANTIS_BUG::where('project_id',$id_project_mb)->whereIn('id',$claims->toArray())->pluck('id');
+            if($MANTIS_BUG->count() > 0){
+                Claim::whereIn('barcode',$MANTIS_BUG->toArray())->update([
+                    'project' => 'mobile'
+                ]);
+            }
+        }
+        $request->session()->flash('status', "setting update success"); 
+        return redirect('/admin/setting');
+    }
 }

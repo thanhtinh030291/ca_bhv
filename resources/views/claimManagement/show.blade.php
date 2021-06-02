@@ -10,6 +10,8 @@ $totalAmount = 0;
     <link href="{{asset('css/formclaim.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('css/ckeditor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/datatables/dataTables.bootstrap4.min.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('css/ckeditor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('css/tagsinput.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <style>
         .disableRow {
             background-color: lightslategrey;
@@ -40,8 +42,6 @@ $totalAmount = 0;
                             <div class="card-body row">
                                 <div class="col-md-7">
                                     
-                                    <h5 class="card-title">Request Letter</h5>
-                                    <p class="card-text"></p>
                                     {{ Form::open(array('url' => '/admin/requestLetter', 'method' => 'POST')) }}
                                         {{ Form::hidden('claim_id', $data->id ) }}
                                         {{ Form::label('letter_template_id', __('message.letter_template'), array('class' => 'labelas')) }}
@@ -72,20 +72,83 @@ $totalAmount = 0;
                                         {{ Form::close() }}
                                     @endif
 
-                                    {{ Form::label('CSR_File', 'CSR File ', array('class' => 'labelas')) }}<br>
-                                    {!! Form::button('CSR File', ['data-toggle' => "modal" ,  'data-target' => "#csrModal", 'type' => 'button', 'class' => ' btn btn-info' ]) !!}<br>
+                                    {{ Form::label('CSR_File', 'CSR File ', array('class' => 'labelas')) }}
+                                    {!! Form::button('CSR File', ['data-toggle' => "modal" ,  'data-target' => "#csrModal", 'type' => 'button', 'class' => ' mt-2 btn btn-info' ]) !!}<br>
 
+                                    {{-- hóa đơn --}}
+                                    
                                     {{-- payment request  --}}
-                                    {{ Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) }}
-                                    <p class="text-danger">Yêu cầu thanh toán chỉ hiển thị khi Được approved! </p>
+                                    {!! Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) !!}
+                                    
                                     @if($can_pay_rq == true)
                                             {!! Form::button('Yêu Cầu Finance Thanh Toán', ['data-toggle' => "modal" ,  
                                                 'data-target' => "#requetPaymentModal",
                                                 'type' => 'button', 
-                                                'class' => ' btn btn-info' , 
+                                                'class' => ' mt-2 btn btn-info' , 
                                                 
                                                 ]) !!}
                                     @endif
+                                    {{-- <div class="card mt-2">
+                                        <div class="card-header p-1 text-danger">
+                                            Invoice Type
+                                        </div>
+                                        <div class="card-body">
+                                            @foreach (config('constants.invoice_type') as $key => $item)
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" name="vat_type" id="{{$key}}" value="{{$key}}">
+                                                    <label class="form-check-label" for="exampleRadios1">
+                                                        {{$item}}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                            <div id="original_invoice" class="original_invoice vat_type border border-warning p-3 mt-2" style="display:none">
+                                                {{ Form::label('title', 'Hóa đơn góc ', array('class' => 'labelas')) }}<br />
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="original_invoice_value" value="Yes">
+                                                    Đầy đủ
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="original_invoice_value" value="No">
+                                                    Đợi bổ sung
+                                                </div>
+                                                <br />
+                                                {{ Form::label('original_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
+                                                {{ Form::text('original_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+                                            </div>
+                                            <div id="e_invoice" class="e_invoice vat_type border border-warning p-3 mt-2" style="display:none">
+                                                {{ Form::label('title', 'Hóa đơn điện tử ', array('class' => 'labelas')) }}<br />
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="e_invoice_value" value="Yes">
+                                                    Hợp lệ
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="e_invoice_value" value="No">
+                                                    Chưa Hợp lệ
+                                                </div>
+                                                <a href="https://einvoice.vn/tra-cuu" target="_blank">https://einvoice.vn/tra-cuu</a>
+                                                <br />
+                                                {{ Form::label('e_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
+                                                {{ Form::text('e_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+                                            </div>
+                                            <div id="converted_invoice" class="vat_type converted_invoice border border-warning p-3 mt-2" style="display:none">
+                                                {{ Form::label('title', 'Hóa đơn chuyển đổi ', array('class' => 'labelas')) }}<br />
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="converted_invoice_value" value="Yes">
+                                                    Hợp lệ
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="converted_invoice_value" value="No">
+                                                    Chưa Hợp lệ
+                                                </div>
+                                                <br />
+                                                {{ Form::label('original_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
+                                                {{ Form::text('converted_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+                                    
+                                    
+                                        
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFile/'.$data->id, 'method'=>'post', 'files' => true))}}
@@ -120,11 +183,11 @@ $totalAmount = 0;
                             {{ Form::label('type',  'Claim Code', array('class' => 'col-md-4')) }}
                             {{ Form::label('type', $data->code_claim_show , array('class' => 'col-md-8')) }}
 
-                            {{ Form::label('type',  'Claim Ref No', array('class' => 'col-md-4')) }}
+                            {{ Form::label('type',  'Barcode', array('class' => 'col-md-4')) }}
                             {{ Form::label('type', $data->barcode , array('class' => 'col-md-8')) }}
 
                             {{ Form::label('type',  'Etalk Link', array('class' => 'col-md-4')) }}
-                            <a class="btn btn-primary col-md-8 " target="_blank" href="{{config('constants.url_mantic').'view.php?id='.$data->mantis_id }}">Link</a>
+                            <a class="btn btn-primary col-md-8 " target="_blank" href="{{config('constants.url_mantic').'view.php?id='.$data->barcode }}">Link</a>
                             
                             
                             {{ Form::label('type',  __('message.account_create'), array('class' => 'col-md-4')) }}
@@ -465,6 +528,7 @@ $totalAmount = 0;
 <script src="{{asset('plugins/datatables/jquery.dataTables.min.js?vision=') .$vision }}" ></script>
 <script src="{{asset('plugins/datatables/dataTables.bootstrap4.min.js?vision=') .$vision }}" ></script>
 <script src="{{ asset('js/tinymce.js?vision=') .$vision }}"></script>
+<script src="{{ asset('js/tagsinput.js?vision=') .$vision }}"></script>
 <script>
     function preview(e){
         $(".loader").show();
@@ -707,6 +771,23 @@ $totalAmount = 0;
                 img_keywords: "happy, places"
             }
         });
+        
+        $("input[name='vat_type']").change(function() {
+            on_off_invoice();
+        });
     });
+    function on_off_invoice(){
+        $(".vat_type").hide();
+        
+        if($("#original_invoice").prop( "checked" ) == true){
+            $(".original_invoice").show();
+        }
+        if($("#e_invoice").prop( "checked" )  == true){
+            $(".e_invoice").show();
+        }
+        if($("#converted_invoice").prop( "checked" ) == true){
+            $(".converted_invoice").show();
+        }
+    }
 </script>
 @endsection

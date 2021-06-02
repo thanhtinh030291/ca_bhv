@@ -41,6 +41,7 @@ use Illuminate\Support\Arr;
 use App\HBS_MR_MEMBER_PLAN;
 use Hfig\MAPI;
 use Hfig\MAPI\OLE\Pear;
+use App\PaymentHistory;
 
 class ClaimController extends Controller
 {
@@ -854,18 +855,11 @@ class ClaimController extends Controller
         $namefile = Str::slug("{$export_letter->letter_template->name}_{$HBS_CL_CLAIM->memberNameCap}", '-');
         $body = [
             'user_email' => $user->email,
-            'issue_id' => $claim->mantis_id,
+            'issue_id' => $claim->barcode,
             'text_note' => " Dear CS,  \n Claim gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,",
 
         ];
-        if($claim->claim_type == 'M'){
-            $body['files'] = [
-                [
-                    'name' => $namefile.".doc",
-                    "content" => base64_encode("<html><body>" .data_get($export_letter->approve, 'data')."</body></html>")
-                ]
-                ];
-        }else{
+        
             // gop
             $mpdf = null;
             $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
@@ -900,11 +894,14 @@ class ClaimController extends Controller
                 $mpdf->WriteHTML(data_get($export_letter->approve, 'data'));
     
             }else{
-                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 34, 'margin_bottom' => 30]);
                 $mpdf->WriteHTML('
                 <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
                     <img src="'.asset("images/header.jpg").'" alt="head">
                 </div>');
+                $mpdf->WriteHTML('<div style="position: absolute; top: 10;
+                    right:5"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+                    <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->SetHTMLFooter('
                 <div style="text-align: right; font-weight: bold;">
                     <img src="'.asset("images/footer.png").'" alt="foot">
@@ -919,7 +916,7 @@ class ClaimController extends Controller
                     "content" => base64_encode($mpdf->Output('filename.pdf',\Mpdf\Output\Destination::STRING_RETURN))
                 ]
                 ];
-        }
+        
         if($export_letter->letter_template->status_mantis != NULL ){
             $body['status_id'] = $export_letter->letter_template->status_mantis;
             $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
@@ -930,7 +927,7 @@ class ClaimController extends Controller
             }
         }
         
-        if($export_letter->letter_template->name == 'Thanh Toán Bổ Sung'){
+        if($export_letter->letter_template->name == 'Thư thông báo bồi thường'){
             
             $diff = $HBS_CL_CLAIM->SumPresAmt - $HBS_CL_CLAIM->SumAppAmt ;
             
@@ -949,6 +946,8 @@ class ClaimController extends Controller
                 'content' => $export_letter->approve['data_payment']
             ];
         }
+        
+        
         try {
             $res = PostApiMantic('api/rest/plugins/apimanagement/issues/add_note_reply_letter/files', $body);
             $res = json_decode($res->getBody(),true);
@@ -966,7 +965,11 @@ class ClaimController extends Controller
             $export_letter->info = $data;
             $export_letter->save();
             if ($export_letter->apv_amt > 0) {
-                $claim->finish_and_pay()->updateOrCreate([], [
+                $pay_time = PaymentHistory::where('CL_NO', $claim->code_claim_show)->count();
+                $claim->finish_and_pay()->updateOrCreate([
+                    'cl_no' => $claim->code_claim_show,
+                    'pay_time' => $pay_time + 1
+                ], [
                     'cl_no' => $claim->code_claim_show,
                     'mantis_id' =>  $claim->barcode,
                     'approve_amt' => $export_letter->apv_amt,
@@ -974,6 +977,7 @@ class ClaimController extends Controller
                     'payed' => 0,
                     'user' => $user->id,
                     'notify' => 1,
+                    'pay_time' => $pay_time + 1
                 ]);
             }
         }
@@ -1168,13 +1172,15 @@ class ClaimController extends Controller
         }
         
         if($claim->claim_type == "M"){
-            $match_pdf = preg_match('/(Giấy giới thiệu)/', $export_letter->letter_template->name , $matches_pdf);
-            if($match_pdf){
-                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 34, 'margin_bottom' => 30]);
+                
                 $mpdf->WriteHTML('
                 <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
                     <img src="'.asset("images/header.jpg").'" alt="head">
                 </div>');
+                $mpdf->WriteHTML('<div style="position: absolute; top: 10;
+                    right:5"><barcode code="'.$claim->barcode.'" type="C93"  height="1.3" />
+                    <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->SetHTMLFooter('
                 <div style="text-align: right; font-weight: bold;">
                     <img src="'.asset("images/footer.png").'" alt="foot">
@@ -1185,18 +1191,6 @@ class ClaimController extends Controller
                 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
                 header("content-disposition: attachment;filename={$data['namefile']}.pdf");
                 echo $mpdf->Output($data['namefile'].'.pdf',\Mpdf\Output\Destination::STRING_RETURN);
-
-            }else{
-                header("Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                header("Expires: 0");//no-cache
-                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");//no-cache
-                header("content-disposition: attachment;filename={$data['namefile']}.doc");
-                echo "<html>";      
-                echo "<body>";
-                echo $data['content'];
-                echo "</body>";
-                echo "</html>";
-            }
         }else{
             $data['content'] = "<html><body>".$data['content']."</body></html>";
             //$create_user_sign = getUserSignThumb($export_letter->created_user);
@@ -1204,7 +1198,9 @@ class ClaimController extends Controller
             $data['content'] = str_replace('[[$per_creater_sign]]', $create_user_sign, $data['content']);
             $data['content'] = str_replace('[[$per_approve_sign]]', "", $data['content']);
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 225, 'margin_left' => 22]);
+            
             $match_form_gop = preg_match('/(FORM GOP)/', $export_letter->letter_template->name , $matches);
+            $match_gop = preg_match('/GOP/', $export_letter->letter_template->name , $matches_g);
             if($match_form_gop){
                 $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 35]);
                 $fileName = storage_path("app/public/sortedClaim")."/". $claim->hospital_request->url_form_request;
@@ -1235,8 +1231,19 @@ class ClaimController extends Controller
                     <div style="text-align: center">'.$claim->barcode.'</div></div>');
                 $mpdf->WriteHTML($data['content']);
     
-            }else{
+            }elseif($match_gop){
                 $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
+                $mpdf->WriteHTML('
+                <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
+                    <img src="'.asset("images/header.jpg").'" alt="head">
+                </div>');
+                $mpdf->SetHTMLFooter('
+                <div style="text-align: right; font-weight: bold;">
+                    <img src="'.asset("images/footer.png").'" alt="foot">
+                </div>');
+                $mpdf->WriteHTML($data['content']);
+            }else{
+                $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 34, 'margin_bottom' => 30]);
                 $mpdf->WriteHTML('
                 <div style="position: absolute; right: 5px; top: 0px;font-weight: bold; ">
                     <img src="'.asset("images/header.jpg").'" alt="head">

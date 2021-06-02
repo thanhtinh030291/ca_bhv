@@ -134,6 +134,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('setting/checkUpdateLogApproved','SettingController@checkUpdateLogApproved')->middleware(['role:Admin']);
         Route::post('setting/updateFreezed','SettingController@updateFreezed')->middleware(['role:Admin']);
         Route::post('setting/updateBenhead','SettingController@updateBenhead')->middleware(['role:Admin']);
+        Route::post('setting/updateProject','SettingController@updateProject')->middleware(['role:Admin']);
+        
 
         Route::resource('uncSign', 'UncSignController');
 

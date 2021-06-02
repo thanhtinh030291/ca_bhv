@@ -20,6 +20,7 @@ class HBS_MR_MEMBER extends  BaseModelDB2
     }
     public function getClaimLineAttribute()
     {
+        
         $CL_LINE = HBS_CL_LINE::where('memb_oid',$this->memb_oid)->where('REV_DATE', null)->get();
         return $CL_LINE;
     }

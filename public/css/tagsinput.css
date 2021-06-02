@@ -41,17 +41,17 @@
   box-shadow: none;
 }
 .bootstrap-tagsinput .badge {
-  margin: 2px 0;
-  padding:5px 8px;
+  margin: 2px 1px;
+  padding:7px 3px;
 }
 .bootstrap-tagsinput .badge [data-role="remove"] {
   margin-left: 8px;
   cursor: pointer;
 }
 .bootstrap-tagsinput .badge [data-role="remove"]:after {
-  content: "×";
+  content: "⨯";
   padding: 0px 4px;
-  background-color:rgba(0, 0, 0, 0.1);
+  background-color:#f73f1e;
   border-radius:50%;
   font-size:13px
 }
