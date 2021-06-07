@@ -2104,7 +2104,33 @@ class ClaimController extends Controller
             return redirect('/admin/claim/'.$id)->with('errorStatus', 'Hóa Chuyển đổi tử Chưa hợp lệ'); 
         }
         $HBS_CL_CLAIM = HBS_CL_CLAIM::HBSData()->findOrFail($claim->code_claim);
-        
+        $HBS_CL_LINE = $HBS_CL_CLAIM->HBS_CL_LINE->first();
+        if($HBS_CL_LINE->scma_oid_cl_payment_method == null){
+            return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có phương thức thanh toán , Vui lòng (Ament -> Update) lại HBS , và thử lại sau'); 
+        }
+        switch ($HBS_CL_CLAIM->payMethod) {
+            case 'CL_PAYMENT_METHOD_TT':
+                if($HBS_CL_LINE->bank_name == null || $HBS_CL_LINE->acct_name == null || $HBS_CL_LINE->acct_no == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin chuyển khoản vui lòng , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            case 'CL_PAYMENT_METHOD_CH':
+                if($HBS_CL_LINE->bank_name == null || $HBS_CL_LINE->bank_branch == null || $HBS_CL_LINE->bank_city == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin Ngân Hàng nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                if($HBS_CL_LINE->beneficiary_name == null || $HBS_CL_LINE->id_passport_date_of_issue == null || $HBS_CL_LINE->id_passport_no == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin ID Card Của Người Nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            case 'CL_PAYMENT_METHOD_CQ':
+                if($HBS_CL_LINE->beneficiary_name == null){
+                    return redirect('/admin/claim/'.$id)->with('errorStatus', 'Claim Chưa có thông tin Người Nhận , Vui lòng (Ament -> Update) lại HBS , và thử lại sau');   
+                }
+                break;
+            default:
+                
+                break;
+        }
         $rp = AjaxCommonController::sendPayment($request,$id);
         switch (data_get($rp,'code')) {
             case '00':
