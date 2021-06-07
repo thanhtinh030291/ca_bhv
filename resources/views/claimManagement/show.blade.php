@@ -11,7 +11,7 @@ $totalAmount = 0;
     <link href="{{asset('css/ckeditor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/datatables/dataTables.bootstrap4.min.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{asset('css/ckeditor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
-    <link href="{{asset('css/tagsinput.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('css/jquery.tag-editor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <style>
         .disableRow {
             background-color: lightslategrey;
@@ -88,67 +88,12 @@ $totalAmount = 0;
                                                 
                                                 ]) !!}
                                     @endif
-                                    {{-- <div class="card mt-2">
-                                        <div class="card-header p-1 text-danger">
-                                            Invoice Type
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach (config('constants.invoice_type') as $key => $item)
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox" name="vat_type" id="{{$key}}" value="{{$key}}">
-                                                    <label class="form-check-label" for="exampleRadios1">
-                                                        {{$item}}
-                                                    </label>
-                                                </div>
-                                            @endforeach
-                                            <div id="original_invoice" class="original_invoice vat_type border border-warning p-3 mt-2" style="display:none">
-                                                {{ Form::label('title', 'Hóa đơn góc ', array('class' => 'labelas')) }}<br />
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="original_invoice_value" value="Yes">
-                                                    Đầy đủ
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="original_invoice_value" value="No">
-                                                    Đợi bổ sung
-                                                </div>
-                                                <br />
-                                                {{ Form::label('original_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
-                                                {{ Form::text('original_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
-                                            </div>
-                                            <div id="e_invoice" class="e_invoice vat_type border border-warning p-3 mt-2" style="display:none">
-                                                {{ Form::label('title', 'Hóa đơn điện tử ', array('class' => 'labelas')) }}<br />
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="e_invoice_value" value="Yes">
-                                                    Hợp lệ
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="e_invoice_value" value="No">
-                                                    Chưa Hợp lệ
-                                                </div>
-                                                <a href="https://einvoice.vn/tra-cuu" target="_blank">https://einvoice.vn/tra-cuu</a>
-                                                <br />
-                                                {{ Form::label('e_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
-                                                {{ Form::text('e_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
-                                            </div>
-                                            <div id="converted_invoice" class="vat_type converted_invoice border border-warning p-3 mt-2" style="display:none">
-                                                {{ Form::label('title', 'Hóa đơn chuyển đổi ', array('class' => 'labelas')) }}<br />
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="converted_invoice_value" value="Yes">
-                                                    Hợp lệ
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="converted_invoice_value" value="No">
-                                                    Chưa Hợp lệ
-                                                </div>
-                                                <br />
-                                                {{ Form::label('original_invoice_no', 'Số hóa đơn ', array('class' => 'labelas')) }}
-                                                {{ Form::text('converted_invoice_no', null, [ 'class' => 'form-control','placeholder' =>'mã hóa đơn',  'data-role' => 'tagsinput']) }}<br/>
-                                            </div>
-                                        </div>
-                                    </div> --}}
+                                    <div class="card mt-2">
+                                        {{-- invoiceModal--}}
+                                        @include('claimManagement.invoiceModal')
+                                    </div>
                                     
-                                    
-                                        
+                                                            
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFile/'.$data->id, 'method'=>'post', 'files' => true))}}
@@ -167,7 +112,8 @@ $totalAmount = 0;
                                     </div>
                                     <!-- End file image -->
                                     {{ Form::close() }}
-                                    
+                                    {{ Form::label('inv_nos', 'Số hóa đơn (HBS)', array('class' => 'labelas')) }}
+                                    {{ Form::text('inv_nos', $inv_nos, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>                                
                                 </div> 
                             </div>
                         </div>
@@ -273,7 +219,7 @@ $totalAmount = 0;
                             <td>{{$item->id}}</td>
                             <td>
                                 {{$item->letter_template->name}}
-                                @if($item->status == $item->end_status && !isset($item->info['note']) && $item->created_user == $user->id )
+                                @if( ($item->status == $item->end_status || ($item->status == 0 && $item->end_status == 13 ))  && !isset($item->info['note']) && $item->created_user == $user->id )
                                 {{ Form::open(array('url' => '/admin/sendEtalk', 'method' => 'POST', 'class' => 'form-inline')) }}
                                     <div>
                                         {{ Form::hidden('id', $item->id) }}
@@ -517,6 +463,9 @@ $totalAmount = 0;
 {{-- deletePagesModal--}}
 @include('claimManagement.deletePagesModal')
 
+{{-- deletePagesModal--}}
+@include('claimManagement.invoiceNoticationModal')
+
 @endsection
 
 
@@ -528,7 +477,7 @@ $totalAmount = 0;
 <script src="{{asset('plugins/datatables/jquery.dataTables.min.js?vision=') .$vision }}" ></script>
 <script src="{{asset('plugins/datatables/dataTables.bootstrap4.min.js?vision=') .$vision }}" ></script>
 <script src="{{ asset('js/tinymce.js?vision=') .$vision }}"></script>
-<script src="{{ asset('js/tagsinput.js?vision=') .$vision }}"></script>
+<script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
     function preview(e){
         $(".loader").show();
@@ -710,6 +659,9 @@ $totalAmount = 0;
 
 
     $(document).ready(function () {
+        $('.tag-editor').tagEditor({
+            removeDuplicates: true
+        });
         $('#debtBalanceTable').DataTable();
         $('.nav-toggle').click(function () {
             var collapse_content_selector = $(this).attr('href');
@@ -772,7 +724,7 @@ $totalAmount = 0;
             }
         });
         
-        $("input[name='vat_type']").change(function() {
+        $("input[name='vat_type[]']").change(function() {
             on_off_invoice();
         });
     });

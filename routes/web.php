@@ -50,6 +50,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/claim/downloadFinishFile/{id}', 'ClaimController@downloadFinishFile')->name('claim.downloadFinishFile');
         Route::post('/claim/confirmContract', 'ClaimController@confirmContract')->name('claim.confirmContract');
         Route::post('/claim/setJetcase/{id}', 'ClaimController@setJetcase')->name('claim.setJetcase');
+        Route::post('/claim/update_invoice/{id}', 'ClaimController@update_invoice')->name('claim.update_invoice');
+        Route::post('/claim/sendNoticationMobile/{id}', 'ClaimController@sendNoticationMobile')->name('claim.sendNoticationMobile');
+        
+        
         
         
         Route::get('/claim/barcode/{barcode}', 'ClaimController@barcode_link');
@@ -103,7 +107,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/dataAjaxHBSGOPClaim', 'AjaxCommonController@dataAjaxHBSGOPClaim')->name('dataAjaxHBSGOPClaim');
         Route::get('/dataAjaxHBSProvByClaim/{claim_oid}', 'AjaxCommonController@dataAjaxHBSProvByClaim')->name('dataAjaxHBSProvByClaim');
         Route::get('/dataAjaxHBSDiagnosis', 'AjaxCommonController@dataAjaxHBSDiagnosis')->name('dataAjaxHBSDiagnosis');
-        Route::get('/AjaxValidClaim', 'AjaxCommonController@AjaxValidClaim')->name('AjaxValidClaim');
         Route::post('/renderEmailProv', 'AjaxCommonController@renderEmailProv')->name('renderEmailProv');
         
 
