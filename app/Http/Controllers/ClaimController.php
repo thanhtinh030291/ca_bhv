@@ -347,10 +347,9 @@ class ClaimController extends Controller
         }
 
         try {
-            $HBS_CL_CLAIM = HBS_CL_CLAIM::IOPDiag()->findOrFail($claim->code_claim);
-            $inv_nos = $HBS_CL_CLAIM->InvNo;
-
+            
             $payment_history_cps = json_decode(AjaxCommonController::getPaymentHistoryCPS($data->code_claim_show)->getContent(),true);
+            $inv_nos = data_get($payment_history_cps,'inv_nos');
             $payment_history = data_get($payment_history_cps,'data_full',[]);
             $approve_amt = data_get($payment_history_cps,'approve_amt');
             $present_amt = data_get($payment_history_cps,'present_amt');
@@ -889,7 +888,6 @@ class ClaimController extends Controller
             'user_email' => $user->email,
             'issue_id' => $claim->barcode,
             'text_note' => " Dear CS,  \n Claim gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,",
-
         ];
         if($claim->project == 'mobile'){
             $body['text_note'] = "Dear {$HBS_CL_CLAIM->memberNameCap},  \n PCV gửi là thư  '{$export_letter->letter_template->name}'  và chi tiết theo như file đính kèm. \n Thanks,";
@@ -1453,10 +1451,10 @@ class ClaimController extends Controller
         $incurDateTo = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_to);
         $incurDateFrom = Carbon::parse($HBS_CL_CLAIM->FirstLine->incur_date_from);
         $RBGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['RB'])->sum('app_amt');
-        $SURGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['SUR','OPR','ANES','RADIA','CHEMO'])->sum('app_amt');
+        $SURGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['SUR','OPR','ANES'])->sum('app_amt');
         $EXTBGOP = $HBS_CL_CLAIM->HBS_CL_LINE->where('PD_BEN_HEAD.ben_head','EXTB')->sum('app_amt');
-        $ICUGOP = $HBS_CL_CLAIM->HBS_CL_LINE->where('PD_BEN_HEAD.ben_head','ICU')->sum('app_amt');
-        $OTHERGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereNotIn('PD_BEN_HEAD.ben_head',['RB','SUR','EXTB','ICU','OPR','ANES','RADIA','CHEMO'])->sum('app_amt');
+        $ICUGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereIn('PD_BEN_HEAD.ben_head',['ICU','CCU'])->sum('app_amt');
+        $OTHERGOP = $HBS_CL_CLAIM->HBS_CL_LINE->whereNotIn('PD_BEN_HEAD.ben_head',['RB','SUR','OPR','ANES','EXTB','ICU','CCU'])->sum('app_amt');
         $ProApvAmt = data_get($claim->hospital_request,'prov_gop_pres_amt',0) - $sumAmountReject;
         $typeGOP = typeGop(data_get($claim->hospital_request,'type_gop',0));
         $noteGOP = data_get($claim->hospital_request,'note',"");
@@ -2484,8 +2482,12 @@ class ClaimController extends Controller
             'id_claim' => $claim->code_claim
         ]);
 
-        
+      
         if($match_form_gop){
+            
+            if($claim->hospital_request->url_form_request == null){
+                return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Vui lòng upload Files Claim Form khu vực input');
+            }
             $template = 'templateEmail.sendProviderTemplate_input';
             $subject = 'Thư bảo lãnh đầu vào KH: '.$HBS_CL_CLAIM->MemberNameCap;
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/'), 'margin_top' => 35]);
