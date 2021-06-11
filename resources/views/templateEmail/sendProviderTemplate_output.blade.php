@@ -39,9 +39,7 @@
                         <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Tên công ty</span></p>
                         </td>
                         <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 52.3pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Công ty TNHH Bảo hiểm Nhân thọ Dai-ichi Việt Nam</span></strong></p>
-                        <p class="MsoNormal" style="line-height: 105%;"><em><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Hoặc</span></em></p>
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Công ty Bảo hiểm Nhân thọ Dai-ichi Việt Nam</span></strong></p>
+                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Công Ty Cổ Phần Bảo Hiểm Hùng Vương – Chi nhánh Bình Dương</span></strong></p>
                         </td>
                         </tr>
                         <tr style="mso-yfti-irow: 2; height: 27.6pt;">
@@ -49,7 +47,7 @@
                         <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Địa chỉ</span></p>
                         </td>
                         <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 27.6pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">149 &ndash; 151 Nguyễn Văn Trỗi, Phường 11, Q. Ph&uacute; Nhuận, TP. HCM</span></strong></p>
+                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Số 17, Lô I, Đường Lý Thái Tổ, Phường Hòa Phú, Tp. Thủ Dầu Một, tỉnh Bình Dương</span></strong></p>
                         </td>
                         </tr>
                         <tr style="mso-yfti-irow: 3; mso-yfti-lastrow: yes; height: 29.8pt;">
@@ -57,7 +55,7 @@
                         <p class="MsoNormal" style="line-height: 105%;"><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">Mã số thuế</span></p>
                         </td>
                         <td style="width: 305.9pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0in 5.4pt 0in 5.4pt; height: 29.8pt;" valign="top" width="408">
-                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">0301851276</span></strong></p>
+                        <p class="MsoNormal" style="line-height: 105%;"><strong><span style="font-size: 12.0pt; line-height: 105%; font-family: 'Times New Roman',serif; color: black;">0305729654-002</span></strong></p>
                         </td>
                         </tr>
                         </tbody>
