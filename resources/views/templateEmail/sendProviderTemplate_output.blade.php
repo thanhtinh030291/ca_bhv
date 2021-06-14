@@ -23,7 +23,7 @@
                         <li class="MsoNormal" style="color: #c00000; mso-list: l0 level1 lfo1;"><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; mso-fareast-font-family: 'Times New Roman';">PCV sẽ không thanh toán cho các hồ sơ quá hạn 30 ngày kể từ ngày xác nhận bảo lãnh chi phí thực tế.</span></li>
                         <li class="MsoNormal" style="color: black; mso-list: l0 level1 lfo1;"><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; mso-fareast-font-family: 'Times New Roman';">Và gửi toàn bộ Hồ sơ gốc có đóng dấu của bệnh viện; <strong>Giấy xác nhận của khách hàng</strong> (nếu có); tất cả chứng từ đã trao đổi qua email khi yêu cầu bảo lãnh (có đóng dấu của bệnh viện) về cho <strong>Pacific Cross Việt Nam</strong>.</span></li>
                         </ol>
-                        <p class="MsoNormal" style="margin-top: 6.0pt; text-align: justify;"><strong><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; color: #c00000; mso-fareast-language: EN-GB;">Vui lòng xuất Hóa đơn GTGT theo thông tin của Dai – ichi Việt Nam:</span></strong></p>
+                        <p class="MsoNormal" style="margin-top: 6.0pt; text-align: justify;"><strong><span style="font-size: 10.0pt; font-family: 'Times New Roman',serif; color: #c00000; mso-fareast-language: EN-GB;">Vui lòng xuất Hóa đơn GTGT theo thông tin của Hùng Vương Việt Nam:</span></strong></p>
                         <table class="MsoNormalTable" style="border-collapse: collapse; mso-yfti-tbllook: 1184; mso-padding-alt: 0in 0in 0in 0in;" border="0" cellspacing="0" cellpadding="0">
                         <tbody>
                         <tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes; height: 31.5pt;">
