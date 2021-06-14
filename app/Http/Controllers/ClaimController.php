@@ -433,7 +433,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear CATHAY, \n Đính kèm là hồ sơ GOP. \n Thanks,",
+                'text_note' => " Dear Team, \n Đính kèm là hồ sơ GOP. \n Thanks,",
             ];
             $handle = fopen(storage_path("app/public/sortedClaim/{$dataUpdate['url_file_sorted']}"),'r');
             $treamfile = stream_get_contents($handle);
@@ -2348,7 +2348,7 @@ class ClaimController extends Controller
             $body = [
                 'user_email' => $user->email,
                 'issue_id' => $claim->barcode,
-                'text_note' => " Dear CATHAY, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
+                'text_note' => " Dear CS, \n PCV gửi là thông tin thanh toán và chi tiết theo như file đính kèm. \n Thanks,",
     
             ];
             $mpdf = new \Mpdf\Mpdf(['tempDir' => base_path('resources/fonts/')]);
