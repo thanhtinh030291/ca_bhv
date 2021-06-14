@@ -56,21 +56,21 @@ $totalAmount = 0;
                                     ]) !!}
 
                                     {{ Form::open(array('url' => '/admin/requestLetter', 'method' => 'POST')) }}
-                                        {{ Form::hidden('claim_id', $data->id ) }}
-                                        {{ Form::label('letter_template_id', __('message.letter_template'), array('class' => 'labelas')) }}
-                                        <div class="row">
-                                            <div class="col-md-8 pr-0">
-                                                {{ Form::select('letter_template_id', $listLetterTemplate, old('letter_template_id'), array('id'=>'letterTemplate', 'class' => 'select2 form-control', 'required')) }}
-                                            </div>
-                                            <div class="col-md-4 p-0">
-                                                {!! Form::button('Send Letter', ['data-toggle' => "modal" ,  
-                                                'data-target' => "#comfirmPaymentModal",
-                                                'type' => 'button', 
-                                                'class' => ' btn btn-info' , 
-                                                'onclick' => 'comfirmPayment(this);',
-                                                ]) !!}
-                                            </div>
+                                    {{ Form::hidden('claim_id', $data->id ) }}
+                                    {{ Form::label('letter_template_id', __('message.letter_template'), array('class' => 'labelas')) }}
+                                    <div class="row">
+                                        <div class="col-md-8 pr-0">
+                                            {{ Form::select('letter_template_id', $listLetterTemplate, old('letter_template_id'), array('id'=>'letterTemplate', 'class' => 'select2 form-control', 'required')) }}
                                         </div>
+                                        <div class="col-md-4 p-0">
+                                            {!! Form::button('Send Letter', ['data-toggle' => "modal" ,  
+                                            'data-target' => "#comfirmPaymentModal",
+                                            'type' => 'button', 
+                                            'class' => ' btn btn-info' , 
+                                            'onclick' => 'comfirmPayment(this);',
+                                            ]) !!}
+                                        </div>
+                                    </div>
                                     {{ Form::close() }}
                                     {{-- claimWordSheets --}}
                                     {{ Form::label('claimWordSheets', 'Claim Word Sheet', array('class' => 'labelas')) }}
@@ -80,13 +80,13 @@ $totalAmount = 0;
                                         
                                         {{ Form::open(array('url' => route('claimWordSheets.store'))) }}
                                         {{ Form::hidden('claim_id', $data->id ) }}
-                                        {{ Form::hidden('mem_ref_no', $data->clClaim->member->memb_ref_no ) }}
+                                        {{ Form::hidden('mem_ref_no', $data->clClaim->member->mbr_no ) }}
                                         <button class="btn btn-info" type="submit" value="save">Run</button> 
                                         {{ Form::close() }}
                                     @endif
 
-                                    {{ Form::label('CSR_File', 'CSR File ', array('class' => 'labelas')) }}<br>
-                                    {!! Form::button('CSR File', ['data-toggle' => "modal" ,  'data-target' => "#csrModal", 'type' => 'button', 'class' => ' btn btn-info' ]) !!}<br>
+                                    {{ Form::label('CSR_File', 'CSR File ', array('class' => 'labelas')) }}
+                                    {!! Form::button('CSR File', ['data-toggle' => "modal" ,  'data-target' => "#csrModal", 'type' => 'button', 'class' => ' mt-2 btn btn-info' ]) !!}<br>
 
                                     {{-- payment request  --}}
                                     {{ Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) }}
@@ -142,6 +142,15 @@ $totalAmount = 0;
                                             {!! Form::button('Yêu Cầu Manager xác nhận', ['type' => 'submit','name'=>'type_submit','value' => 'request','class' => ' btn btn-info' ]) !!}
                                         {{ Form::close() }}
                                     @endif
+                                    
+                                    {{-- payment request  --}}
+                                    {!! Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) !!}
+                                    
+                                    
+                                    <div class="card mt-2">
+                                        {{-- invoiceModal--}}
+                                        @include('claimManagement.invoiceModal')
+                                    </div>
                                 </div>
                                 <div class="col-md-5">
                                     {{ Form::open(array('url' => '/admin/claim/uploadSortedFileGOP/'.$data->id, 'method'=>'post', 'files' => true))}}
@@ -162,7 +171,8 @@ $totalAmount = 0;
                                     </div>
                                     <!-- End file image -->
                                     {{ Form::close() }}
-                                    
+                                    {{ Form::label('inv_nos', 'Số hóa đơn (HBS)', array('class' => 'labelas')) }}
+                                    {{ Form::text('inv_nos', $inv_nos, [ 'class' => 'tag-editor form-control','placeholder' =>'mã hóa đơn']) }}<br/>           
                                 </div> 
                             </div>
                         </div>
@@ -972,8 +982,24 @@ $totalAmount = 0;
                 img_keywords: "happy, places"
             }
         });
+        $("input[name='vat_type[]']").change(function() {
+            on_off_invoice();
         });
-        gop_pres_amt_change();
+    });
+    function on_off_invoice(){
+        $(".vat_type").hide();
+        
+        if($("#original_invoice").prop( "checked" ) == true){
+            $(".original_invoice").show();
+        }
+        if($("#e_invoice").prop( "checked" )  == true){
+            $(".e_invoice").show();
+        }
+        if($("#converted_invoice").prop( "checked" ) == true){
+            $(".converted_invoice").show();
+        }
+    }
+    gop_pres_amt_change();
         
 </script>
 @endsection
