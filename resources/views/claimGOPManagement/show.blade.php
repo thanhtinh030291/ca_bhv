@@ -12,6 +12,7 @@ $totalAmount = 0;
     <link href="{{asset('plugins/datatables/dataTables.bootstrap4.min.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('css/tagsinput.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('css/dropzone.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
+    <link href="{{asset('css/jquery.tag-editor.css?vision=') .$vision }}" media="all" rel="stylesheet" type="text/css"/>
     <style>
         .disableRow {
             background-color: lightslategrey;
@@ -143,10 +144,6 @@ $totalAmount = 0;
                                         {{ Form::close() }}
                                     @endif
                                     
-                                    {{-- payment request  --}}
-                                    {!! Form::label('Payment_Request', 'Payment Request', array('class' => 'labelas')) !!}
-                                    
-                                    
                                     <div class="card mt-2">
                                         {{-- invoiceModal--}}
                                         @include('claimManagement.invoiceModal')
@@ -202,6 +199,24 @@ $totalAmount = 0;
 
                             {{ Form::label('type',  "Approve Amt HBS", array('class' => 'col-md-4 ')) }}
                             {{ Form::label('type', formatPrice($approve_amt, " đ"), array( "id" => "apv_hbs_show", 'class' => 'col-md-8 text-danger font-weight-bold')) }}
+                            
+                            {{ Form::label('type',  "Admin Fee HBS", array('class' => 'col-md-4 ')) }}
+                            {{ Form::label('type', formatPrice($admin_fee, " đ"), array( "id" => "apv_hbs_show", 'class' => 'col-md-8 text-danger font-weight-bold')) }}
+                            {{ Form::label('include_admin_fee', 'Thanh toán bao gồm AdminFee: ', array('class' => 'labelas')) }}<br>
+                            {{ Form::open(array('url' => '/admin/claim/setAdminFee/'.$data->id, 'method' => 'POST')) }}
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input" id="customRadio" name="include_admin_fee" value="0" checked >
+                                    <label class="custom-control-label" for="customRadio">No</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input" id="customRadio2" name="include_admin_fee" value="1" @if($data->include_admin_fee == 1 ) checked @endif>
+                                    <label class="custom-control-label" for="customRadio2">YES</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <button class="btn btn-info" type="submit" value="save">Save</button> 
+                                </div>
+                            {{ Form::close() }}
+
                             {{-- Cấn trừ --}}
                             {{ Form::label('type',  "Payment History", array('class' => 'col-md-6 ')) }}
                             <div id="payment_history_show" class="col-md-12 border border-danger p-3 mb-3">
@@ -545,6 +560,9 @@ $totalAmount = 0;
 {{-- deletePagesModal--}}
 @include('claimManagement.deletePagesModal')
 
+{{-- invoiceNoticationModal--}}
+@include('claimManagement.invoiceNoticationModal')
+
 @endsection
 
 
@@ -563,6 +581,7 @@ $totalAmount = 0;
 <script src="{{ asset('js/dropzone.min.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/DataStream.js?vision=') .$vision }}"></script>
 <script src="{{ asset('js/msg.reader.js?vision=') .$vision }}"></script>
+<script src="{{ asset('js/jquery.tag-editor.min.js?vision=') .$vision }}"></script>
 <script>
     
     
@@ -863,7 +882,9 @@ $totalAmount = 0;
     
     $(document).ready(function () {
         
-        
+        $('.tag-editor').tagEditor({
+            removeDuplicates: true
+        });
         //$("div#requestGOPForm").dropzone({url: "{{ url('admin/attachEmail') }}/{{$data->id}}"});
         Dropzone.options.requestGOPForm = {
             url: "{{ url('admin/attachEmail') }}/{{$data->id}}",

@@ -15,6 +15,11 @@ class HBS_CL_CLAIM extends  BaseModelDB2
         return $this->hasMany('App\HBS_CL_LINE', 'clam_oid', 'clam_oid')->whereNull('rev_date');
     }
 
+    public function HBS_CL_LINE_BASE()
+    {
+        return $this->hasMany('App\HBS_CL_LINE_BASE', 'clam_oid', 'clam_oid')->whereNull('rev_date');
+    }
+
     public function getMemberAttribute()
     {
         $fisrtClLine = $this->HBS_CL_LINE->first();
@@ -146,6 +151,10 @@ class HBS_CL_CLAIM extends  BaseModelDB2
         $clLines = $this->HBS_CL_LINE->toArray();
         $sum = array_sum(array_column($clLines,'app_amt'));
         return round($sum);
+    }
+
+    public function getAdminFeeAttribute(){
+        return $this->HBS_CL_LINE_BASE->pluck('admin_fee')->sum();
     }
 
     public function getInvNoAttribute(){

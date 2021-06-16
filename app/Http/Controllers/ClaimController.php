@@ -350,6 +350,7 @@ class ClaimController extends Controller
             
             $payment_history_cps = json_decode(AjaxCommonController::getPaymentHistoryCPS($data->code_claim_show)->getContent(),true);
             $inv_nos = data_get($payment_history_cps,'inv_nos');
+            $admin_fee = data_get($payment_history_cps,'admin_fee');
             $payment_history = data_get($payment_history_cps,'data_full',[]);
             $approve_amt = data_get($payment_history_cps,'approve_amt');
             $present_amt = data_get($payment_history_cps,'present_amt');
@@ -360,7 +361,8 @@ class ClaimController extends Controller
             $member_name = data_get($payment_history_cps,'member_name');
             $balance_cps = json_decode(AjaxCommonController::getBalanceCPS($data->clClaim->member->mbr_no , $data->code_claim_show)->getContent(),true);
             $balance_cps = collect(data_get($balance_cps, 'data_full'));
-            $tranfer_amt = (int)$approve_amt - (int)collect($payment_history)->sum('TF_AMT')-$balance_cps->sum('DEBT_BALANCE');
+            $tranfer_amt = (int)$approve_amt - (int)collect($payment_history)->sum('TF_AMT')-$balance_cps->sum('DEBT_BALANCE') + (int)$admin_fee;
+            $tranfer_amt = $claim->include_admin_fee == 1 ? $tranfer_amt : ($tranfer_amt - (int)$admin_fee);
             
         } catch (\Throwable $th) {
             $payment_history = [];
@@ -372,6 +374,7 @@ class ClaimController extends Controller
             $memb_no = "";
             $payment_method = "";
             $inv_nos = null;
+            $admin_fee = 0;
             $balance_cps = collect([]);
         }
         //show notication mobile
@@ -398,7 +401,8 @@ class ClaimController extends Controller
         $compact = compact(['data', 'dataImage', 'items', 'admin_list', 'listReasonReject', 
         'listLetterTemplate' , 'list_status_ad', 'user', 'payment_history', 'approve_amt','tranfer_amt','present_amt',
         'payment_method','pocy_no','memb_no', 'member_name', 'balance_cps', 'can_pay_rq',
-        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail','reject_code','IS_FREEZED','inv_nos','btn_notication','renderMessageInvoice'
+        'CsrFile','manager_gop_accept_pay','hospital_request', 'list_diagnosis', 'selected_diagnosis', 'fromEmail','reject_code','IS_FREEZED',
+        'inv_nos','btn_notication','renderMessageInvoice','admin_fee'
         ]);
         if ($claim_type == 'P'){
             return view('claimGOPManagement.show', $compact);
@@ -1419,10 +1423,11 @@ class ClaimController extends Controller
         $itemsReject = $CSRRemark_TermRemark['itemsReject'];
         $sumAmountReject = $CSRRemark_TermRemark['sumAmountReject'];
         $sumAppAmt = (int)$HBS_CL_CLAIM->sumAppAmt ;
+        $adminfee = $claim->include_admin_fee == 1 ? $HBS_CL_CLAIM->adminFee : 0 ;
         $export_letter = ExportLetter::findOrFail($export_letter_id);
         $note_pay =  note_pay($export_letter);
         if($export_letter->data_cps == null || $export_letter->data_cps == [] ){
-            $time_pay = formatPrice($sumAppAmt);
+            $time_pay = formatPrice($sumAppAmt + $adminfee);
             $paymentAmt = $time_pay;
         }else{
             $time_pay = [];
@@ -1433,11 +1438,11 @@ class ClaimController extends Controller
                 
             };
             if(collect($export_letter->data_cps)->sum('TF_AMT') != $sumAppAmt){
-                $time_pay[] = 'Thanh toán bổ sung: ' . formatPrice($sumAppAmt - $sum_tf_amt);
+                $time_pay[] = 'Thanh toán bổ sung: ' . formatPrice($sumAppAmt + $adminfee - $sum_tf_amt);
             }
-            $time_pay[] = 'Tổng Cộng: '.formatPrice($sumAppAmt);
+            $time_pay[] = 'Tổng Cộng: '.formatPrice($sumAppAmt + $adminfee);
             $time_pay = implode("<br>",$time_pay);
-            $paymentAmt = $sumAppAmt - $sum_tf_amt;
+            $paymentAmt = $sumAppAmt + $adminfee - $sum_tf_amt;
         }
         $Provider = $HBS_CL_CLAIM->FirstLine;
         
@@ -1550,6 +1555,7 @@ class ClaimController extends Controller
         $content = str_replace('[[$tableInfoPayment_en]]', $this->tableInfoPayment($HBS_CL_CLAIM,'en') , $content);
         $content = str_replace('[[$apvAmt]]', formatPrice((int)$sumAppAmt), $content);
         $content = str_replace('[[$time_pay]]', $time_pay, $content);
+        $content = str_replace('[[$adminfee]]', formatPrice((int)$adminfee), $content);
         $content = str_replace('[[$paymentAmt]]', formatPrice($paymentAmt), $content);
         return ['content' => $content , 'namefile' => $namefile];
         
@@ -2292,6 +2298,9 @@ class ClaimController extends Controller
             foreach ($claim->item_of_claim as $key => $value) {
                 $sumItemReject += removeFormatPrice($value->amount);
             }
+            if($claim->hospital_request == null){
+                return redirect('/admin/claim/'.$id)->with('errorStatus', 'Vui Lòng kiểm nhập dữ liều đầu vào và submit ');
+            }
             if($sumItemReject != ($claim->hospital_request->prov_gop_pres_amt - $approve_amt)){
                 return redirect('/admin/claim/'.$id)->with('errorStatus', 'Vui lòng nhập đúng những items reject hoặc số tiền yêu cầu ban đầu');
             }
@@ -2404,8 +2413,8 @@ class ClaimController extends Controller
             ]);
 
             // notifi admin claim
-            $claim->report_admin()->updateOrCreate(['claim_id' => $claim->id]
-                ,['REQUEST_SEND' => 1]);
+            // $claim->report_admin()->updateOrCreate(['claim_id' => $claim->id]
+            //     ,['REQUEST_SEND' => 1]);
             $to_admin_claim = User::whereHas("roles", function($q){ $q->where("name", "AdminClaim"); })->get()->pluck('id')->toArray();
             if (!empty($to_admin_claim)) {
                 foreach ($to_admin_claim as $key => $value) {
@@ -2569,6 +2578,14 @@ class ClaimController extends Controller
 
         $claim = Claim::findOrFail($id);
         $claim->jetcase = $request->jetcase ? $request->jetcase : 0;
+        $claim->save();
+        return redirect('/admin/claim/'.$id)->with('status', 'Đã cập nhật thành công');
+    }
+
+    public function setAdminFee(Request $request, $id){
+
+        $claim = Claim::findOrFail($id);
+        $claim->include_admin_fee = $request->include_admin_fee ? $request->include_admin_fee : 0;
         $claim->save();
         return redirect('/admin/claim/'.$id)->with('status', 'Đã cập nhật thành công');
     }

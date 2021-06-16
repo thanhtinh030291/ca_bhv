@@ -52,6 +52,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/claim/setJetcase/{id}', 'ClaimController@setJetcase')->name('claim.setJetcase');
         Route::post('/claim/update_invoice/{id}', 'ClaimController@update_invoice')->name('claim.update_invoice');
         Route::post('/claim/sendNoticationMobile/{id}', 'ClaimController@sendNoticationMobile')->name('claim.sendNoticationMobile');
+        Route::post('/claim/setAdminFee/{id}', 'ClaimController@setAdminFee')->name('claim.setAdminFee');
         
         
         
