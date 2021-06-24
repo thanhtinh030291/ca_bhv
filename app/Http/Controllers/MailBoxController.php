@@ -64,7 +64,7 @@ class MailBoxController extends Controller
         $mess = $folder->messages()->setFetchOrder("desc")->all()->get();
         $mess = $mess->paginate($per_page = 20, $page = $search_params['imap_page'], $page_name = 'imap_page');
         
-        return view('mailBoxManagement/index',compact('folder','mess'));
+        return view('mailBoxManagement/index',compact('folder','mess','search_params'));
     }
 
     public function show($id)
