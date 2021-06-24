@@ -47,7 +47,7 @@ class MailBoxController extends Controller
     {
         $search_params = [
         'imap_page' => $request->get('imap_page'),
-        //     'message' => $request->get('search'),
+        'search' => $request->get('search'),
         //     'important' => $request->get('important')
         ];
         $client = \Webklex\IMAP\Facades\Client::account('default');
