@@ -2494,7 +2494,7 @@ class ClaimController extends Controller
       
         if($match_form_gop){
             
-            if($claim->hospital_request->url_form_request == null){
+            if(data_get($claim->hospital_request , 'url_form_request') == null){
                 return redirect('/admin/claim/'.$claim_id)->with('errorStatus', 'Vui lòng upload Files Claim Form khu vực input');
             }
             $template = 'templateEmail.sendProviderTemplate_input';
@@ -2549,7 +2549,7 @@ class ClaimController extends Controller
             
             $old_msg = $claim->inbox_email->body;
             preg_match('/(RE:)/',  $claim->inbox_email->subject, $matches_re, PREG_OFFSET_CAPTURE);
-            $subject = $matches_re ? $claim->inbox_email->subject : "RE: " . $claim->inbox_email->subject;
+            $subject = $matches_re ? $claim->inbox_email->subject : "RE: " . $claim->inbox_email->subject ."-".$HBS_CL_CLAIM->MemberNameCap;
             $old_msg  = str_replace("\r\n", "<br>", utf8_decode($old_msg));
         }
         $user = Auth::User();

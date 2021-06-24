@@ -161,6 +161,11 @@ Route::group(['prefix' => 'admin'], function () {
         
         //report FN payment
         Route::resource('ReportPaymentFN', 'ReportPaymentFNController');
+
+         //Mail box
+         Route::resource('mailbox', 'MailBoxController');
+         Route::get('mailbox/{id_mess}/download/{id}','MailBoxController@download');
+         Route::get('mailbox-error-messages','MailBoxController@error_messages');
     });
 
 });

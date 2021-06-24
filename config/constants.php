@@ -101,26 +101,16 @@ return[
         'HYNO' => 'Y hoc thay thế',
         'OSTE' => 'Y hoc thay thế'
     ],
-    // 'token_mantic' => '5NuseQTZpNeqcAqy-63wRrdXfnBe2pdw',
-    // 'url_mantic' => 'https://pcv-etalk.pacificcross.com.vn/',
-    // 'url_mantic_api' => 'https://pcv-etalk.pacificcross.com.vn/',
-    // 'url_cps' => 'https://cpspcv.pacificcross.com.vn/index.php/',
-    // 'api_cps' => 'https://cpspcv.pacificcross.com.vn/index.php/api/',
-    // 'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
-    // 'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
-    // 'url_hbs' => 'http://192.168.148.3:8010/',
-    // 'url_mobile_api'  => '',
-    //test
-    'token_mantic' => 'z-x1DmlA3dZwU8hnGgC1LOahQ_1fgzcV',
-    'url_mantic' => 'https://pcv-etalk-test.pacificcross.com.vn/',
-    'url_mantic_api' => 'https://pcv-etalk-test.pacificcross.com.vn/',
-    'url_cps' => 'https://cpspcv-uat.pacificcross.com.vn/index.php/',
-    'api_cps' => 'https://cpspcv-uat.pacificcross.com.vn/index.php/api/',
-    'client_id' => 'ul-2l44e7vq-3t8m-4fqeaxi-6olcepgxweq',
-    'client_secret' => 'ukbg95yi3ifcdjiso5rc7kcjqeetxpfv',
-    'url_hbs' => 'http://192.168.148.3:8010/',
-    'url_mobile_api'  => 'http://127.0.0.1:8000/api/',
-    //end test
+    
+    'token_mantic' => env("token_mantic",""),
+    'url_mantic' => env("url_mantic",""),
+    'url_mantic_api' => env("url_mantic_api",""),
+    'url_cps' => env("url_cps",""),
+    'api_cps' => env("api_cps",""),
+    'client_id' => env("client_id",""),
+    'client_secret' => env("client_secret",""),
+    'url_hbs' => env("url_hbs",""),
+    'url_mobile_api'  => env("url_mobile_api",""),
 
     //sms
     // 'api_sms' => 'http://sandbox.sms.fpt.net/',
@@ -179,6 +169,9 @@ return[
         '57' => 'paid',
         '70' => 'inforequest_sent',
         '59' => 'notpay',
+        '31' => 'GOP Request',
+        '32' => 'GOP Initial Approval',
+        '33' => 'GOP Wait Docs'
     ],
     'status_mantic_value' => [
         'accepted' => 11,
