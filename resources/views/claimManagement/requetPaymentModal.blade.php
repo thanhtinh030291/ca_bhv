@@ -28,7 +28,7 @@
                         {{ Form::text('app_amt', $approve_amt, ['class' => 'form-control col-md-5 mt-1', 'readonly']) }}
                     
                         {{ Form::label('tf_amt', 'Transfer Amt(SỐ TIỀN THANH TOÁN)', ['class' => 'labelas col-md-5 mt-1']) }}
-                        {{ Form::text('tf_amt', $tranfer_amt, ['class' => 'form-control col-md-5 mt-1', 'readonly']) }}
+                        {{ Form::text('tf_amt', $tranfer_amt, ['class' => 'form-control col-md-5 mt-1']) }}
                     
                         {{ Form::label('deduct_amt', 'Deduct Amt(Tiền khách Hàng nợ được đòi)', ['class' => 'labelas col-md-5 mt-1']) }}
                         {{ Form::text('deduct_amt', $balance_cps->sum('DEBT_BALANCE'), ['class' => 'form-control col-md-5 mt-1', 'readonly']) }}
